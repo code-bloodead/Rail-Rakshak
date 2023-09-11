@@ -1,22 +1,52 @@
 import InputField from "components/fields/InputField";
 import Checkbox from "components/checkbox";
 import Card from "components/card";
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 
 export default function SignIn() {
-  const [eid, setEid] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    eid: "",
+    password: "",
+    showPassword: false,
+  });
 
-  const handleEidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEid(e.target.value.toUpperCase());
+  const [errors, setErrors] = useState({
+    eid: "",
+    password: "",
+  });
+
+  const eidRegex = /^[A-Z]{4}[0-9]{4}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+  const handleFieldChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    fieldName: string
+  ) => {
+    const { value } = e.target;
+    const newValue = fieldName === "eid" ? value.toUpperCase() : value;
+    setFormData((prevData) => ({ ...prevData, [fieldName]: newValue }));
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const { eid, password } = formData;
+    const newErrors = {
+      eid: "",
+      password: "",
+    };
+
+    if (!eidRegex.test(eid)) newErrors.eid = "Invalid Employee ID";
+
+    if (!passwordRegex.test(password))
+      newErrors.password = "At least 8 characters, 1 uppercase, 1 lowercase";
+
+    setErrors(newErrors);
+
+    if (!newErrors.eid && !newErrors.password) {
+      console.log(eid, password);
+      // Success logic here
+    }
   };
 
   return (
@@ -33,13 +63,14 @@ export default function SignIn() {
             variant="auth"
             extra="mb-5"
             label="Employee ID"
-            placeholder="ABCD1234"
+            placeholder="E.g. ABCD1234"
             id="eid"
             type="text"
-            pattern="[A-Z0-9]+"
             maxLength={8}
-            value={eid}
-            onChange={handleEidChange}
+            value={formData.eid}
+            errorMsg={errors.eid}
+            onChange={(e) => handleFieldChange(e, "eid")}
+            state={errors.eid ? "error" : ""}
           />
 
           {/* Password */}
@@ -51,8 +82,11 @@ export default function SignIn() {
             id="password"
             type="password"
             minLength={8}
-            value={password}
-            onChange={handlePasswordChange}
+            showPassword={formData.showPassword}
+            errorMsg={errors.password}
+            value={formData.password}
+            onChange={(e) => handleFieldChange(e, "password")}
+            state={errors.password ? "error" : ""}
           />
           {/* Checkbox */}
           <div className="mb-5 flex items-center justify-between px-2">
