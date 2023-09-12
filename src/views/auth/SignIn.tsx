@@ -2,6 +2,8 @@ import InputField from "components/fields/InputField";
 import Checkbox from "components/checkbox";
 import Card from "components/card";
 import { useState, ChangeEvent, FormEvent } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "definitions";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
@@ -27,7 +29,7 @@ export default function SignIn() {
     setFormData((prevData) => ({ ...prevData, [fieldName]: newValue }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { eid, password } = formData;
@@ -45,7 +47,21 @@ export default function SignIn() {
 
     if (!newErrors.eid && !newErrors.password) {
       console.log(eid, password);
-      // Success logic here
+      const formData = {
+        id: eid,
+        password: password,
+      };
+  
+      try {
+        let res = await axios.post(`${BACKEND_URL}/auth/station_admin`, formData);
+        
+        if(res.data?.SUCCESS)
+          console.log(res.data);
+        else
+          newErrors.password = "Invalid Credentials";
+      } catch (ex) {
+        console.log(ex);
+      }
     }
   };
 
@@ -62,7 +78,7 @@ export default function SignIn() {
           <InputField
             variant="auth"
             extra="mb-5"
-            label="Employee ID"
+            label="Station Admin ID"
             placeholder="E.g. ABCD1234"
             id="eid"
             type="text"
