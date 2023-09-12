@@ -1,8 +1,8 @@
 import { useState } from "react";
-import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-import Progress from "components/progress";
-import { MdCancel, MdCheckCircle, MdOutlineError } from "react-icons/md";
+
+import { GoDotFill } from "react-icons/go";
+import { ImEnlarge } from "react-icons/im";
 
 import {
   createColumnHelper,
@@ -12,18 +12,15 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-
+import { NavigateFunction, useNavigate } from "react-router-dom";
 type RowObj = {
-  name: string;
+  name: string[];
   status: string;
-  date: string;
-  progress: number;
 };
 
-const columnHelper = createColumnHelper<RowObj>();
-
-// const columns = columnsDataCheck;
-export default function ComplexTable(props: { tableData: any }) {
+function StaffTable(props: { tableData: any }) {
+  const columnHelper = createColumnHelper<RowObj>();
+  const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
@@ -33,10 +30,19 @@ export default function ComplexTable(props: { tableData: any }) {
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
       ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
+      cell: (info: any) => (
+        <div className="flex items-center gap-2">
+          <div className="h-[30px] w-[30px] rounded-full">
+            <img
+              src={info.getValue()[1]}
+              className="h-full w-full rounded-full"
+              alt=""
+            />
+          </div>
+          <p className="text-sm font-medium text-navy-700 dark:text-white">
+            {info.getValue()[0]}
+          </p>
+        </div>
       ),
     }),
     columnHelper.accessor("status", {
@@ -47,46 +53,22 @@ export default function ComplexTable(props: { tableData: any }) {
         </p>
       ),
       cell: (info) => (
-        <div className="flex items-center">
-          {info.getValue() === "Approved" ? (
-            <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
-          ) : info.getValue() === "Disable" ? (
-            <MdCancel className="me-1 text-red-500 dark:text-red-300" />
-          ) : info.getValue() === "Error" ? (
-            <MdOutlineError className="me-1 text-amber-500 dark:text-amber-300" />
-          ) : null}
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+        <div className="flex items-center justify-start">
+          <GoDotFill
+            className={`me-1 ${
+              info.getValue() === "Available"
+                ? "text-green-500 dark:text-green-300"
+                : "text-amber-500 dark:text-amber-300"
+            } `}
+          />
+          <p className="text-md font-medium text-gray-600 dark:text-white">
             {info.getValue()}
           </p>
         </div>
       ),
     }),
-    columnHelper.accessor("date", {
-      id: "date",
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor("progress", {
-      id: "progress",
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          PROGRESS
-        </p>
-      ),
-      cell: (info) => (
-        <div className="flex items-center">
-          <Progress width="w-[108px]" value={info.getValue()} />
-        </div>
-      ),
-    }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState<any>(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
@@ -99,15 +81,24 @@ export default function ComplexTable(props: { tableData: any }) {
     debugTable: true,
   });
   return (
-    <Card extra={"w-full h-full px-6 pb-6 sm:overflow-x-auto"}>
-      <div className="relative flex items-center justify-between pt-4">
+    <Card extra={"w-full h-full sm:overflow-auto px-6"}>
+      <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Complex Table
+          Staff Table
         </div>
-        <CardMenu />
-      </div>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+        <button
+          onClick={() => {
+            navigate("/dept-admin/employees");
+          }}
+          className={`linear flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+        >
+          <ImEnlarge className="h-4 w-4" />
+        </button>
+      </header>
+
+      <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -147,7 +138,7 @@ export default function ComplexTable(props: { tableData: any }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className="min-w-[140px] border-white/0 py-3  pr-4"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -165,3 +156,5 @@ export default function ComplexTable(props: { tableData: any }) {
     </Card>
   );
 }
+
+export default StaffTable;

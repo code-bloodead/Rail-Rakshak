@@ -6,7 +6,7 @@ import NFt5 from "assets/img/nfts/Nft5.png";
 import NFt6 from "assets/img/nfts/Nft6.png";
 import avatar from "assets/img/defaultAvatar.jpg";
 
-import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTopCreators";
+import tableDataTopCreators from "views/dept-admin/marketplace/variables/tableDataTopCreators";
 import HistoryCard from "./components/HistoryCard";
 import TopCreatorTable from "./components/TableTopCreators";
 import NftCard from "components/card/NftCard";

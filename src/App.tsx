@@ -6,7 +6,8 @@ const App = () => {
   return (
     <Routes>
       <Route path="auth/*" element={<AuthLayout />} />
-      <Route path="admin/*" element={<AdminLayout />} />
+      <Route path="dept-admin/*" element={<AdminLayout />} />
+      <Route path="station-admin/*" element={<AdminLayout />} />
       <Route path="/" element={<Navigate to="/auth" replace />} />
     </Routes>
   );
