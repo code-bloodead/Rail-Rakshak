@@ -1,4 +1,5 @@
 const Checkbox = (props: {
+  onClick?: () => void;
   extra?: string;
   color?:
     | "red"
@@ -17,10 +18,11 @@ const Checkbox = (props: {
     | "gray";
   [x: string]: any;
 }) => {
-  const { extra, color, ...rest } = props;
+  const { extra, color, onClick, ...rest } = props;
   return (
     <input
       type="checkbox"
+      onClick={onClick}
       className={`defaultCheckbox relative flex h-[20px] min-h-[20px] w-[20px] min-w-[20px] appearance-none items-center 
       justify-center rounded-md border border-gray-300 text-white/0 outline-none transition duration-[0.2s]
       checked:border-none checked:text-white hover:cursor-pointer dark:border-white/10 ${

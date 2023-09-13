@@ -1,6 +1,4 @@
 import { useState } from "react";
-import CardMenu from "components/card/CardMenu";
-import Progress from "components/progress";
 import Card from "components/card";
 
 import {
@@ -11,60 +9,79 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { ImEnlarge } from "react-icons/im";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { MdCheckCircle } from "react-icons/md";
+import { BsClockHistory } from "react-icons/bs";
+
 type RowObj = {
-  name: string[];
-  artworks: number;
-  rating: number;
+  id: number;
+  date: string;
+  category: string;
+  status: string;
 };
 
-function CheckTable(props: { tableData: any }) {
+function ReportTable(props: { tableData: any }) {
+  const columnHelper = createColumnHelper<RowObj>();
+  const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor("name", {
-      id: "name",
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
-      ),
-      cell: (info: any) => (
-        <div className="flex items-center gap-2">
-          <div className="h-[30px] w-[30px] rounded-full">
-            <img
-              src={info.getValue()[1]}
-              className="h-full w-full rounded-full"
-              alt=""
-            />
-          </div>
-          <p className="text-sm font-medium text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
-        </div>
-      ),
-    }),
-    columnHelper.accessor("artworks", {
-      id: "artworks",
+    columnHelper.accessor("id", {
+      id: "id",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          ARTWORKS
+          REPORT ID
         </p>
       ),
-      cell: (info) => (
-        <p className="text-md font-medium text-gray-600 dark:text-white">
+      cell: (info: any) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
       ),
     }),
-    columnHelper.accessor("rating", {
-      id: "rating",
+    columnHelper.accessor("date", {
+      id: "date",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("category", {
+      id: "category",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          RATING
+          CATEGORY
         </p>
       ),
       cell: (info) => (
-        <div className="mx-2 flex font-bold">
-          <Progress width="w-16" value={info.getValue()} />
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("status", {
+      id: "status",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          STATUS
+        </p>
+      ),
+      cell: (info) => (
+        <div className="flex items-center">
+          {info.getValue() === "Resolved" ? (
+            <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
+          ) : info.getValue() === "Pending" ? (
+            <BsClockHistory className="me-1 text-amber-500 dark:text-amber-300" />
+          ) : null}
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
         </div>
       ),
     }),
@@ -85,13 +102,21 @@ function CheckTable(props: { tableData: any }) {
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Check Table
+          Reported Incidents
         </div>
 
-        <CardMenu />
+        <button
+          onClick={() => {
+            navigate("/dept-admin/reported-incidents");
+          }}
+          className={`linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+        >
+          <ImEnlarge className="h-4 w-4" />
+        </button>
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -123,16 +148,13 @@ function CheckTable(props: { tableData: any }) {
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 5)
+              .rows.slice(0, 6)
               .map((row) => {
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td
-                          key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
-                        >
+                        <td key={cell.id} className="border-white/0 py-3  pr-4">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -150,5 +172,4 @@ function CheckTable(props: { tableData: any }) {
   );
 }
 
-export default CheckTable;
-const columnHelper = createColumnHelper<RowObj>();
+export default ReportTable;

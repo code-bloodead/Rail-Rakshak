@@ -1,6 +1,4 @@
 import { useState } from "react";
-import CardMenu from "components/card/CardMenu";
-import Checkbox from "components/checkbox";
 import Card from "components/card";
 
 import {
@@ -11,58 +9,33 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { AiOutlinePlus } from "react-icons/ai";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { MdCheckCircle } from "react-icons/md";
+import { BsClockHistory } from "react-icons/bs";
 
 type RowObj = {
-  name: [string, boolean];
-  progress: string;
-  quantity: number;
+  id: number;
   date: string;
+  assigned: string[];
+  status: string;
 };
 
-function CheckTable(props: { tableData: any }) {
+function TaskTable(props: { tableData: any }) {
+  const columnHelper = createColumnHelper<RowObj>();
+  const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor("name", {
-      id: "name",
+    columnHelper.accessor("id", {
+      id: "id",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          TASK ID
+        </p>
       ),
       cell: (info: any) => (
-        <div className="flex items-center">
-          <Checkbox
-            defaultChecked={info.getValue()[1]}
-            colorScheme="brandScheme"
-            me="10px"
-          />
-          <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
-        </div>
-      ),
-    }),
-    columnHelper.accessor("progress", {
-      id: "progress",
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          PROGRESS
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor("quantity", {
-      id: "quantity",
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          QUANTITY
-        </p>
-      ),
-      cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
@@ -77,6 +50,39 @@ function CheckTable(props: { tableData: any }) {
         <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
+      ),
+    }),
+    columnHelper.accessor("assigned", {
+      id: "assigned",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          ASSIGNED
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue().join(", ")}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("status", {
+      id: "status",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          STATUS
+        </p>
+      ),
+      cell: (info) => (
+        <div className="flex items-center">
+          {info.getValue() === "Completed" ? (
+            <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
+          ) : info.getValue() === "In Progress" ? (
+            <BsClockHistory className="me-1 text-amber-500 dark:text-amber-300" />
+          ) : null}
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        </div>
       ),
     }),
   ]; // eslint-disable-next-line
@@ -96,13 +102,21 @@ function CheckTable(props: { tableData: any }) {
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Check Table
+          Tasks Table
         </div>
 
-        <CardMenu />
+        <button
+          onClick={() => {
+            navigate("/dept-admin/tasks");
+          }}
+          className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem] text-xl font-bold text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+        >
+          <AiOutlinePlus className="h-5 w-5" />
+        </button>
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -134,7 +148,7 @@ function CheckTable(props: { tableData: any }) {
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 5)
+              .rows.slice(0, 6)
               .map((row) => {
                 return (
                   <tr key={row.id}>
@@ -161,5 +175,4 @@ function CheckTable(props: { tableData: any }) {
   );
 }
 
-export default CheckTable;
-const columnHelper = createColumnHelper<RowObj>();
+export default TaskTable;

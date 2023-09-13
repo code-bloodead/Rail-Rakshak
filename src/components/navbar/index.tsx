@@ -165,12 +165,17 @@ const Navbar = (props: {
                 >
                   Newsletter Settings
                 </a>
-                <a
-                  href=" "
+                <Link
+                  to="/auth/sign-in"
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("role");
+                    localStorage.removeItem("dept");
+                  }}
                 >
                   Log Out
-                </a>
+                </Link>
               </div>
             </div>
           }

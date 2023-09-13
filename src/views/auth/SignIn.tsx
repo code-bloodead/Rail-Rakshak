@@ -3,11 +3,12 @@ import Checkbox from "components/checkbox";
 import Card from "components/card";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "definitions";
+import { BACKEND_URL } from "constants/definitions";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
   const navigate: NavigateFunction = useNavigate();
+  const [loggedIn, setLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     eid: "",
     password: "",
@@ -48,22 +49,22 @@ export default function SignIn() {
     setErrors(newErrors);
 
     if (!newErrors.eid && !newErrors.password) {
-      console.log(eid, password);
       const formData = {
         id: eid,
         password: password,
       };
 
-      if (eid === "ABCD1234" && password === "123456aA")
-        navigate("/dept-admin/dashboard");
       try {
-        let res = await axios.post(
-          `${BACKEND_URL}/auth/station_admin`,
-          formData
-        );
+        let res = await axios.post(`${BACKEND_URL}/auth/admin`, formData);
 
-        if (res.data?.SUCCESS) console.log(res.data);
-        else newErrors.password = "Invalid Credentials";
+        if (res.data?.SUCCESS) {
+          if (loggedIn) {
+            localStorage.setItem("token", res.data.SUCCESS.id);
+            localStorage.setItem("role", res.data.SUCCESS.role);
+            localStorage.setItem("dept", res.data.SUCCESS.dept_name);
+          }
+          navigate("/dept-admin/dashboard");
+        } else setErrors({ eid: "", password: "Invalid Credentials" });
       } catch (ex) {
         console.log(ex);
       }
@@ -83,7 +84,7 @@ export default function SignIn() {
           <InputField
             variant="auth"
             extra="mb-5"
-            label="Station Admin ID"
+            label="Admin ID"
             placeholder="E.g. ABCD1234"
             id="eid"
             type="text"
@@ -112,7 +113,7 @@ export default function SignIn() {
           {/* Checkbox */}
           <div className="mb-5 flex items-center justify-between px-2">
             <div className="flex items-center">
-              <Checkbox />
+              <Checkbox onClick={() => setLoggedIn(!loggedIn)} />
               <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
                 Keep me logged In
               </p>

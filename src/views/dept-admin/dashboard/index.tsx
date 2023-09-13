@@ -7,10 +7,10 @@ import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
 import ReportTable from "./components/ReportTable";
 import IncidentTable from "./components/IncidentTable";
-import tableDataTask from "./variables/tableDataTask";
-import tableDataReport from "./variables/tableDataReport";
-import tableDataIncident from "./variables/tableDataIncident";
-import tableDataStaff from "./variables/tableDataStaff";
+import tableDataTask from "constants/tableDataTask";
+import tableDataReport from "constants/tableDataReport";
+import tableDataStaff from "constants/tableDataStaff";
+import tableDataIncident from "constants/tableDataIncident";
 
 const Dashboard = () => {
   return (
