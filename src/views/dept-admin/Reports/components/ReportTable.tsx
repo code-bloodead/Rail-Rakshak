@@ -104,16 +104,6 @@ function ReportTable(props: { tableData: any }) {
         <div className="text-xl font-bold text-navy-700 dark:text-white">
           Reported Incidents
         </div>
-
-        <button
-          onClick={() => {
-            navigate("/dept-admin/reported-incidents");
-          }}
-          className={`linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
-           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
-        >
-          <ImEnlarge className="h-4 w-4" />
-        </button>
       </header>
 
       <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">

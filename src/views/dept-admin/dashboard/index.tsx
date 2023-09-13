@@ -5,12 +5,11 @@ import { TbReport } from "react-icons/tb";
 import Widget from "components/widget/Widget";
 import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
-import ReportTable from "./components/ReportTable";
-import IncidentTable from "./components/IncidentTable";
+import RecentIncidentsTable from "./components/RecentIncidentsTable";
 import tableDataTask from "constants/tableDataTask";
-import tableDataReport from "constants/tableDataReport";
 import tableDataStaff from "constants/tableDataStaff";
 import tableDataIncident from "constants/tableDataIncident";
+import WeeklyIncidents from "./components/WeeklyIncidents";
 
 const Dashboard = () => {
   return (
@@ -38,8 +37,8 @@ const Dashboard = () => {
       {/* Charts */}
 
       <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-        <IncidentTable tableData={tableDataIncident} />
-        <ReportTable tableData={tableDataReport} />
+        <WeeklyIncidents />
+        <RecentIncidentsTable tableData={tableDataIncident} />
       </div>
 
       {/* Tables & Charts */}

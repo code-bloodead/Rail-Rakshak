@@ -5,8 +5,11 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "constants/definitions";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "app/store";
+import { setAdmin } from "app/features/AdminSlice";
 
 export default function SignIn() {
+  const dispatch = useAppDispatch();
   const navigate: NavigateFunction = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
@@ -63,6 +66,7 @@ export default function SignIn() {
             localStorage.setItem("role", res.data.SUCCESS.role);
             localStorage.setItem("dept", res.data.SUCCESS.dept_name);
           }
+          dispatch(setAdmin(res.data.SUCCESS));
           navigate("/dept-admin/dashboard");
         } else setErrors({ eid: "", password: "Invalid Credentials" });
       } catch (ex) {

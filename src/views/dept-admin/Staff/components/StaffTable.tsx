@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Card from "components/card";
 
+import { GoDotFill } from "react-icons/go";
+import { ImEnlarge } from "react-icons/im";
+
 import {
   createColumnHelper,
   flexRender,
@@ -9,42 +12,48 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ImEnlarge } from "react-icons/im";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { MdCheckCircle } from "react-icons/md";
-import { BsClockHistory } from "react-icons/bs";
-
 type RowObj = {
-  id: number;
-  date: string;
-  category: string;
+  name: string[];
+  eid: string;
+  contact: string;
+  dept: string;
   status: string;
 };
 
-function IncidentTable(props: { tableData: any }) {
+function StaffTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
   const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor("id", {
-      id: "id",
+    columnHelper.accessor("name", {
+      id: "name",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          INCIDENT ID
-        </p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
       ),
       cell: (info: any) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
+        <div className="flex items-center gap-2">
+          <div className="h-[30px] w-[30px] rounded-full">
+            <img
+              src={info.getValue()[1]}
+              className="h-full w-full rounded-full"
+              alt=""
+            />
+          </div>
+          <p className="text-sm font-medium text-navy-700 dark:text-white">
+            {info.getValue()[0]}
+          </p>
+        </div>
       ),
     }),
-    columnHelper.accessor("date", {
-      id: "date",
+    columnHelper.accessor("eid", {
+      id: "eid",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          EMPLOYEE ID
+        </p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
@@ -52,11 +61,24 @@ function IncidentTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("category", {
-      id: "category",
+    columnHelper.accessor("contact", {
+      id: "contact",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          CATEGORY
+          CONTACT NO.
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("dept", {
+      id: "dept",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          DEPARTMENT
         </p>
       ),
       cell: (info) => (
@@ -73,20 +95,22 @@ function IncidentTable(props: { tableData: any }) {
         </p>
       ),
       cell: (info) => (
-        <div className="flex items-center">
-          {info.getValue() === "Resolved" ? (
-            <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
-          ) : info.getValue() === "Pending" ? (
-            <BsClockHistory className="me-1 text-amber-500 dark:text-amber-300" />
-          ) : null}
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+        <div className="flex items-center justify-start">
+          <GoDotFill
+            className={`me-1 ${
+              info.getValue() === "Available"
+                ? "text-green-500 dark:text-green-300"
+                : "text-amber-500 dark:text-amber-300"
+            } `}
+          />
+          <p className="text-md font-medium text-gray-600 dark:text-white">
             {info.getValue()}
           </p>
         </div>
       ),
     }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState<any>(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
@@ -102,7 +126,7 @@ function IncidentTable(props: { tableData: any }) {
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Detected Incidents
+          Staff Table
         </div>
       </header>
 
@@ -138,13 +162,16 @@ function IncidentTable(props: { tableData: any }) {
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 6)
+              .rows.slice(0, 5)
               .map((row) => {
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="border-white/0 py-3  pr-4">
+                        <td
+                          key={cell.id}
+                          className="min-w-[140px] border-white/0 py-3  pr-4"
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -162,4 +189,4 @@ function IncidentTable(props: { tableData: any }) {
   );
 }
 
-export default IncidentTable;
+export default StaffTable;

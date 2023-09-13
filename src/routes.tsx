@@ -4,7 +4,7 @@ import Tasks from "views/dept-admin/Tasks";
 import Reports from "views/dept-admin/Reports";
 import Incidents from "views/dept-admin/Incidents";
 import Footages from "views/dept-admin/Footages";
-import Employees from "views/dept-admin/Employees";
+import Staff from "views/dept-admin/Staff";
 
 // Auth Imports
 import SignIn from "views/auth/SignIn";
@@ -53,11 +53,11 @@ const routes = [
     component: <Footages />,
   },
   {
-    name: "Employees",
+    name: "Staff",
     layout: "/dept-admin",
-    path: "employees",
+    path: "staff",
     icon: <BsFillPeopleFill className="h-6 w-6" />,
-    component: <Employees />,
+    component: <Staff />,
   },
   {
     name: "Sign In",

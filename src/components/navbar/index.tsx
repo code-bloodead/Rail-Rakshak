@@ -7,14 +7,18 @@ import { FiSearch } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import avatar from "assets/img/defaultAvatar.jpg";
+import { useAppDispatch, useAppSelector } from "app/store";
+import { clearAdmin } from "app/features/AdminSlice";
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
   brandText: string;
   secondary?: boolean | string;
 }) => {
+  const dispatch = useAppDispatch();
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = useState(false);
+  const admin = useAppSelector((state) => state.admin.data);
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -146,7 +150,7 @@ const Navbar = (props: {
               <div className="ml-4 mt-3">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-navy-700 dark:text-white">
-                    👋 Hello, User
+                    👋 Hello, {admin.name}
                   </p>{" "}
                 </div>
               </div>
@@ -172,6 +176,7 @@ const Navbar = (props: {
                     localStorage.removeItem("token");
                     localStorage.removeItem("role");
                     localStorage.removeItem("dept");
+                    dispatch(clearAdmin());
                   }}
                 >
                   Log Out
