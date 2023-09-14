@@ -7,27 +7,13 @@ import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
 import RecentIncidentsTable from "./components/RecentIncidentsTable";
 import tableDataTask from "constants/tableDataTask";
-import tableDataStaff from "constants/tableDataStaff";
 import tableDataIncident from "constants/tableDataIncident";
 import WeeklyIncidents from "./components/WeeklyIncidents";
-import { useAppDispatch, useAppSelector } from "app/store";
-import { useEffect } from "react";
-import { setStaff } from "app/features/StaffSlice";
-import { getStaffByDept } from "api/Staff";
+import { useAppSelector } from "app/store";
 
 const Dashboard = () => {
-  const dispatch = useAppDispatch();
-  const admin = useAppSelector((state) => state.admin.data);
-  const fetchData = async () => {
-    if (localStorage.getItem("token")) {
-      const res = await getStaffByDept(admin.dept_name, admin.station_name);
-      dispatch(setStaff(res.SUCCESS));
-    }
-  };
+  const staff = useAppSelector((state) => state.staff.data);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <div>
       {/* Card widget */}
@@ -64,10 +50,11 @@ const Dashboard = () => {
         <div className="col-span-2">
           <TaskTable tableData={tableDataTask} />
         </div>
-
-        <div className="grid grid-cols-1 rounded-[20px]">
-          <StaffTable tableData={tableDataStaff} />
-        </div>
+        {staff.length > 0 && (
+          <div className="grid grid-cols-1 rounded-[20px]">
+            <StaffTable tableData={staff} />
+          </div>
+        )}
       </div>
     </div>
   );
