@@ -50,7 +50,7 @@ const Dashboard = () => {
         <div className="col-span-2">
           <TaskTable tableData={tableDataTask} />
         </div>
-        {staff.length > 0 && (
+        {staff?.length > 0 && (
           <div className="grid grid-cols-1 rounded-[20px]">
             <StaffTable tableData={staff} />
           </div>

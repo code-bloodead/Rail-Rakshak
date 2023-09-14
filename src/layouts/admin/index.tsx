@@ -21,7 +21,7 @@ export default function Admin(props: { [x: string]: any }) {
   const fetchData = async () => {
     if (localStorage.getItem("token")) {
       const res = await getAdminByID(localStorage.getItem("token"));
-      dispatch(setAdmin(res.SUCCESS));
+      dispatch(setAdmin(res?.SUCCESS));
     }
   };
 
@@ -37,7 +37,7 @@ export default function Admin(props: { [x: string]: any }) {
       try {
         if (localStorage.getItem("token")) {
           const res = await getStaffByDept(admin.dept_name, admin.station_name);
-          dispatch(setStaff(res.SUCCESS));
+          dispatch(setStaff(res?.SUCCESS));
         }
       } catch (error) {
         console.error(error);

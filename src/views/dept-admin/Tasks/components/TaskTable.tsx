@@ -9,10 +9,12 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useDisclosure } from "@chakra-ui/hooks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
+import AddTaskModal from "./AddTaskModal";
 
 type RowObj = {
   id: number;
@@ -22,6 +24,7 @@ type RowObj = {
 };
 
 function TaskTable(props: { tableData: any }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const columnHelper = createColumnHelper<RowObj>();
   const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
@@ -106,9 +109,7 @@ function TaskTable(props: { tableData: any }) {
         </div>
 
         <button
-          onClick={() => {
-            navigate("/dept-admin/tasks");
-          }}
+          onClick={() => onOpen()}
           className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem] text-xl font-bold text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
         >
@@ -171,6 +172,7 @@ function TaskTable(props: { tableData: any }) {
           </tbody>
         </table>
       </div>
+      <AddTaskModal isOpen={isOpen} onClose={onClose} />
     </Card>
   );
 }
