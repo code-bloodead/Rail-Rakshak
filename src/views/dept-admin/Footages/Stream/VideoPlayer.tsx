@@ -7,7 +7,7 @@ interface VideoPlayerProps {
   url: string;
 }
 
-export const VideoJS = (props: VideoPlayerProps) => {
+export const VideoPlayer = (props: VideoPlayerProps) => {
   const { url } = props;
   const videoRef = React.useRef<HTMLDivElement>(null);
   const playerRef = React.useRef<Player | null>(null);
@@ -94,4 +94,4 @@ export const VideoJS = (props: VideoPlayerProps) => {
   );
 };
 
-export default VideoJS;
+export default VideoPlayer;

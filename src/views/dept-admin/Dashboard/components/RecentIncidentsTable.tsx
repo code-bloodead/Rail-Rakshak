@@ -9,8 +9,6 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ImEnlarge } from "react-icons/im";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 
@@ -23,7 +21,8 @@ type RowObj = {
 
 function IncidentTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
-  const navigate: NavigateFunction = useNavigate();
+  // const navigate: NavigateFunction = useNavigate();
+
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
