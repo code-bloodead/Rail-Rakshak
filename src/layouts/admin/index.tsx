@@ -4,18 +4,31 @@ import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes";
+import { setAdmin } from "app/features/AdminSlice";
+import { useAppDispatch } from "app/store";
+import { getAdminByID } from "api/Admin";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(true);
   const [currentRoute, setCurrentRoute] = useState("Dashboard");
+
+  const fetchData = async () => {
+    if (localStorage.getItem("token")) {
+      const res = await getAdminByID(localStorage.getItem("token"));
+      dispatch(setAdmin(res.SUCCESS));
+    }
+  };
 
   useEffect(() => {
     window.addEventListener("resize", () =>
       window.innerWidth < 1200 ? setOpen(false) : setOpen(true)
     );
+    fetchData();
   }, []);
+
   useEffect(() => {
     getActiveRoute(routes);
   }, [location.pathname]);

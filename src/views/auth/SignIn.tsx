@@ -23,7 +23,7 @@ export default function SignIn() {
     password: "",
   });
 
-  const eidRegex = /^[A-Z]{4}[0-9]{4}$/;
+  const eidRegex = /^[A-Z0-9]{8}$/;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
   const handleFieldChange = (
@@ -67,7 +67,11 @@ export default function SignIn() {
             localStorage.setItem("dept", res.data.SUCCESS.dept_name);
           }
           dispatch(setAdmin(res.data.SUCCESS));
-          navigate("/dept-admin/dashboard");
+          if (res.data.SUCCESS.role === "DEPT_ADMIN") {
+            navigate("/dept-admin/dashboard");
+          } else {
+            navigate("/station-admin/dashboard");
+          }
         } else setErrors({ eid: "", password: "Invalid Credentials" });
       } catch (ex) {
         console.log(ex);

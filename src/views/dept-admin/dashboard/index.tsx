@@ -10,8 +10,24 @@ import tableDataTask from "constants/tableDataTask";
 import tableDataStaff from "constants/tableDataStaff";
 import tableDataIncident from "constants/tableDataIncident";
 import WeeklyIncidents from "./components/WeeklyIncidents";
+import { useAppDispatch, useAppSelector } from "app/store";
+import { useEffect } from "react";
+import { setStaff } from "app/features/StaffSlice";
+import { getStaffByDept } from "api/Staff";
 
 const Dashboard = () => {
+  const dispatch = useAppDispatch();
+  const admin = useAppSelector((state) => state.admin.data);
+  const fetchData = async () => {
+    if (localStorage.getItem("token")) {
+      const res = await getStaffByDept(admin.dept_name, admin.station_name);
+      dispatch(setStaff(res.SUCCESS));
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <div>
       {/* Card widget */}

@@ -4,12 +4,14 @@ import { HiX } from "react-icons/hi";
 import Links from "./components/Links";
 
 import routes from "routes";
+import { useAppSelector } from "app/store";
 
 const Sidebar = (props: {
   open: boolean;
   onClose: React.MouseEventHandler<HTMLSpanElement>;
 }) => {
   const { open, onClose } = props;
+  const admin = useAppSelector((state) => state.admin.data);
   return (
     <div
       className={`sm:none duration-175 linear fixed !z-50 flex min-h-full flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${
@@ -23,12 +25,17 @@ const Sidebar = (props: {
         <HiX />
       </span>
 
-      <div className={`mx-[56px] mt-[50px] flex items-center`}>
-        <div className="ml-1 mt-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
+      <div
+        className={`mx-[56px] mt-[50px] flex flex-col items-center justify-center`}
+      >
+        <div className="my-2 ml-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
           Rail Rakshak
         </div>
+        <div className="mt-5 text-base text-navy-700 dark:text-white">
+          ({admin.station_name})
+        </div>
       </div>
-      <div className="mb-7 mt-[58px] h-px bg-gray-300 dark:bg-white/30" />
+      <div className="mb-7 mt-2 h-px bg-gray-300 dark:bg-white/30" />
       {/* Nav item */}
 
       <ul className="mb-auto pt-1">
