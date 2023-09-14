@@ -2,7 +2,7 @@ import { useState } from "react";
 import Card from "components/card";
 
 import { GoDotFill } from "react-icons/go";
-import { ImEnlarge } from "react-icons/im";
+import avatar from "assets/img/defaultAvatar.jpg";
 
 import {
   createColumnHelper,
@@ -14,10 +14,11 @@ import {
 } from "@tanstack/react-table";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 type RowObj = {
-  name: string[];
-  eid: string;
-  contact: string;
-  dept: string;
+  staff_name: string;
+  id: string;
+  phone: string;
+  dept_name: string;
+  photo: string;
   status: string;
 };
 
@@ -28,28 +29,31 @@ function StaffTable(props: { tableData: any }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor("name", {
-      id: "name",
+    columnHelper.accessor("photo", {
+      id: "photo",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white"></p>
       ),
       cell: (info: any) => (
-        <div className="flex items-center gap-2">
-          <div className="h-[30px] w-[30px] rounded-full">
-            <img
-              src={info.getValue()[1]}
-              className="h-full w-full rounded-full"
-              alt=""
-            />
-          </div>
-          <p className="text-sm font-medium text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
+        <div className="h-[30px] w-[30px] rounded-full">
+          <img src={avatar} className="h-full w-full rounded-full" alt="" />
         </div>
       ),
     }),
-    columnHelper.accessor("eid", {
-      id: "eid",
+    columnHelper.accessor("staff_name", {
+      id: "staff_name",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          @{info.getValue()}
+        </p>
+      ),
+    }),
+
+    columnHelper.accessor("id", {
+      id: "id",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
           EMPLOYEE ID
@@ -61,8 +65,8 @@ function StaffTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("contact", {
-      id: "contact",
+    columnHelper.accessor("phone", {
+      id: "phone",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
           CONTACT NO.
@@ -74,8 +78,8 @@ function StaffTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("dept", {
-      id: "dept",
+    columnHelper.accessor("dept_name", {
+      id: "dept_name",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
           DEPARTMENT
@@ -160,28 +164,29 @@ function StaffTable(props: { tableData: any }) {
             ))}
           </thead>
           <tbody>
-            {table
-              .getRowModel()
-              .rows.slice(0, 5)
-              .map((row) => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td
-                          key={cell.id}
-                          className="min-w-[140px] border-white/0 py-3  pr-4"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td
+                        key={cell.id}
+                        className={`${
+                          cell.column.id === "photo"
+                            ? "min-w-20px"
+                            : "min-w-[130px]"
+                        }  border-white/0 py-3 pr-2`}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

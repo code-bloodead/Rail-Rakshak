@@ -5,8 +5,10 @@ import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes";
 import { setAdmin } from "app/features/AdminSlice";
-import { useAppDispatch } from "app/store";
+import { useAppDispatch, useAppSelector } from "app/store";
 import { getAdminByID } from "api/Admin";
+import { getStaffByDept } from "api/Staff";
+import { setStaff } from "app/features/StaffSlice";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
@@ -14,6 +16,7 @@ export default function Admin(props: { [x: string]: any }) {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(true);
   const [currentRoute, setCurrentRoute] = useState("Dashboard");
+  const admin = useAppSelector((state) => state.admin.data);
 
   const fetchData = async () => {
     if (localStorage.getItem("token")) {
@@ -28,6 +31,21 @@ export default function Admin(props: { [x: string]: any }) {
     );
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await getStaffByDept(admin.dept_name, admin.station_name);
+          dispatch(setStaff(res.SUCCESS));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [admin, dispatch]);
 
   useEffect(() => {
     getActiveRoute(routes);

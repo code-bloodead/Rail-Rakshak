@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Card from "components/card";
-
+import avatar from "assets/img/defaultAvatar.jpg";
 import { GoDotFill } from "react-icons/go";
 import { ImEnlarge } from "react-icons/im";
 
@@ -13,8 +13,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+
 type RowObj = {
-  name: string[];
+  staff_name: string;
+  photo: string;
   status: string;
 };
 
@@ -24,25 +26,28 @@ function StaffTable(props: { tableData: any }) {
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
+  console.log(defaultData);
   const columns = [
-    columnHelper.accessor("name", {
-      id: "name",
+    columnHelper.accessor("photo", {
+      id: "photo",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white"></p>
+      ),
+      cell: (info: any) => (
+        <div className="h-[30px] w-[30px] rounded-full">
+          <img src={avatar} className="h-full w-full rounded-full" alt="" />
+        </div>
+      ),
+    }),
+    columnHelper.accessor("staff_name", {
+      id: "staff_name",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
       ),
-      cell: (info: any) => (
-        <div className="flex items-center gap-2">
-          <div className="h-[30px] w-[30px] rounded-full">
-            <img
-              src={info.getValue()[1]}
-              className="h-full w-full rounded-full"
-              alt=""
-            />
-          </div>
-          <p className="text-sm font-medium text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
-        </div>
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          @{info.getValue()}
+        </p>
       ),
     }),
     columnHelper.accessor("status", {
@@ -138,7 +143,11 @@ function StaffTable(props: { tableData: any }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[140px] border-white/0 py-3  pr-4"
+                          className={`${
+                            cell.column.id === "photo"
+                              ? "min-w-20px"
+                              : "min-w-[130px]"
+                          }  border-white/0 py-3 pr-1`}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
