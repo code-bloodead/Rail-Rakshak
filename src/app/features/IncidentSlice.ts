@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BACKEND_URL } from "constants/definitions";
+import { BACKEND_URL } from "@/constants/definitions";
 
 export interface Incident {
   id: string;

@@ -1,12 +1,12 @@
-import InputField from "components/fields/InputField";
-import Checkbox from "components/checkbox";
-import Card from "components/card";
+import InputField from "@/components/fields/InputField";
+import Checkbox from "@/components/checkbox";
+import Card from "@/components/card";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "constants/definitions";
+import { BACKEND_URL } from "@/constants/definitions";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "app/store";
-import { setAdmin } from "app/features/AdminSlice";
+import { useAppDispatch } from "@/app/store";
+import { setAdmin } from "@/app/features/AdminSlice";
 
 export default function SignIn() {
   const dispatch = useAppDispatch();

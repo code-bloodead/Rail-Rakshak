@@ -2,13 +2,13 @@ import { MdReport } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
 import { TbReport } from "react-icons/tb";
 
-import Widget from "components/widget/Widget";
+import Widget from "@/components/widget/Widget";
 import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
 import RecentIncidentsTable from "./components/RecentIncidentsTable";
-import tableDataTask from "constants/tableDataTask";
+import tableDataTask from "@/constants/tableDataTask";
 import WeeklyIncidents from "./components/WeeklyIncidents";
-import { useAppSelector } from "app/store";
+import { useAppSelector } from "@/app/store";
 
 const Dashboard = () => {
   const staff = useAppSelector((state) => state.staff.data);

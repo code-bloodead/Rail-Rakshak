@@ -1,5 +1,5 @@
 import TaskTable from "./components/TaskTable";
-import tableDataTask from "constants/tableDataTask";
+import tableDataTask from "@/constants/tableDataTask";
 
 const Tasks = () => {
   return (

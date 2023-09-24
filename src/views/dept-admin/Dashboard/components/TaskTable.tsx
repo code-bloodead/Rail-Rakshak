@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Card from "components/card";
+import Card from "@/components/card";
 import { ImEnlarge } from "react-icons/im";
 import { AiOutlinePlus } from "react-icons/ai";
 import { NavigateFunction, useNavigate } from "react-router-dom";

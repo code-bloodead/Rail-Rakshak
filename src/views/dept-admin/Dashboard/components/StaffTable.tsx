@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Card from "components/card";
-import avatar from "assets/img/defaultAvatar.jpg";
+import Card from "@/components/card";
+import avatar from "@/assets/img/defaultAvatar.jpg";
 import { GoDotFill } from "react-icons/go";
 import { ImEnlarge } from "react-icons/im";
 

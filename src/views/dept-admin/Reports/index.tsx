@@ -1,4 +1,4 @@
-import tableDataReport from "constants/tableDataReport";
+import tableDataReport from "@/constants/tableDataReport";
 import ReportTable from "./components/ReportTable";
 
 const Reports = () => {

@@ -1,13 +1,13 @@
 // Admin Imports
-import Dashboard from "views/dept-admin/Dashboard";
-import Tasks from "views/dept-admin/Tasks";
-import Reports from "views/dept-admin/Reports";
-import Incidents from "views/dept-admin/Incidents";
-import Footages from "views/dept-admin/Footages";
-import Staff from "views/dept-admin/Staff";
+import Dashboard from "@/views/dept-admin/Dashboard";
+import Tasks from "@/views/dept-admin/Tasks";
+import Reports from "@/views/dept-admin/Reports";
+import Incidents from "@/views/dept-admin/Incidents";
+import Footages from "@/views/dept-admin/Footages";
+import Staff from "@/views/dept-admin/Staff";
 
 // Auth Imports
-import SignIn from "views/auth/SignIn";
+import SignIn from "@/views/auth/SignIn";
 
 // Icon Imports
 import { MdHome, MdLock, MdReport } from "react-icons/md";

@@ -3,8 +3,8 @@
 import { HiX } from "react-icons/hi";
 import Links from "./components/Links";
 
-import routes from "routes";
-import { useAppSelector } from "app/store";
+import routes from "@/routes";
+import { useAppSelector } from "@/app/store";
 
 const Sidebar = (props: {
   open: boolean;

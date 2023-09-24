@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Card from "components/card";
+import Card from "@/components/card";
 
 import {
   createColumnHelper,
@@ -16,7 +16,7 @@ import { BsClockHistory } from "react-icons/bs";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
-import Pagination from "components/pagination/Pagination";
+import Pagination from "@/components/pagination/Pagination";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

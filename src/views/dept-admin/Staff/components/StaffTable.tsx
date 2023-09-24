@@ -1,10 +1,10 @@
 import { useReducer, useState } from "react";
-import Card from "components/card";
+import Card from "@/components/card";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { AiOutlinePlus } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
 import { GoDotFill } from "react-icons/go";
-import avatar from "assets/img/defaultAvatar.jpg";
+import avatar from "@/assets/img/defaultAvatar.jpg";
 
 import {
   createColumnHelper,
@@ -25,7 +25,7 @@ import {
   rankItem,
   compareItems,
 } from "@tanstack/match-sorter-utils";
-import Pagination from "components/pagination/Pagination";
+import Pagination from "@/components/pagination/Pagination";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

@@ -1,14 +1,14 @@
 import { useState } from "react";
-import Dropdown from "components/dropdown";
+import Dropdown from "@/components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { BsArrowBarUp } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import avatar from "assets/img/defaultAvatar.jpg";
-import { useAppDispatch, useAppSelector } from "app/store";
-import { clearAdmin } from "app/features/AdminSlice";
+import avatar from "@/assets/img/defaultAvatar.jpg";
+import { useAppDispatch, useAppSelector } from "@/app/store";
+import { clearAdmin } from "@/app/features/AdminSlice";
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -20,8 +20,9 @@ const Navbar = (props: {
   const { onOpenSidenav, brandText, currentRoute } = props;
   const [darkmode, setDarkmode] = useState(false);
   const admin = useAppSelector((state) => state.admin.data);
-  const isSearchVisible = currentRoute === ("Dashboard" || "CCTV Footage");
-  console.log(currentRoute);
+  const isSearchVisible =
+    currentRoute === "Dashboard" || currentRoute === "CCTV Footage";
+  console.log(currentRoute, isSearchVisible);
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -31,7 +32,7 @@ const Navbar = (props: {
             className="text-sm font-normal text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             href=" "
           >
-            {admin.dept_name} Dept.
+            {admin?.dept_name} Dept.
             <span className="mx-1 text-sm text-navy-700 hover:text-navy-700 dark:text-white">
               {" "}
               /{" "}
@@ -162,7 +163,7 @@ const Navbar = (props: {
               <div className="ml-4 mt-3">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-navy-700 dark:text-white">
-                    👋 Hello, {admin.admin_name}
+                    👋 Hello, {admin?.admin_name}
                   </p>{" "}
                 </div>
               </div>

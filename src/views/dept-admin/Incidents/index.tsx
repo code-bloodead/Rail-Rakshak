@@ -1,4 +1,4 @@
-import tableDataIncident from "constants/tableDataIncident";
+import tableDataIncident from "@/constants/tableDataIncident";
 import IncidentTable from "./components/IncidentTable";
 
 const Incidents = () => {

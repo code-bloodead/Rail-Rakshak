@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Card from "components/card";
 
 import {
   createColumnHelper,
@@ -15,11 +14,8 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from "@tanstack/match-sorter-utils";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import Card from "@/components/card";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

@@ -1,4 +1,4 @@
-import { useAppSelector } from "app/store";
+import { useAppSelector } from "@/app/store";
 import StaffTable from "./components/StaffTable";
 
 const Staff = () => {

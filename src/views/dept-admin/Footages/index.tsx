@@ -1,4 +1,4 @@
-import Card from "components/card";
+import Card from "@/components/card";
 import VideoPlayer from "./Stream/VideoPlayer";
 import useCrowdCounter from "./Stream/useCrowdCounter";
 import ReactApexChart from "react-apexcharts";
@@ -17,7 +17,6 @@ const Footages = () => {
   );
 
   console.log(peopleCountHistory);
-  
 
   const chartOptions: ApexOptions = {
     chart: {

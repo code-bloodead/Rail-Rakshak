@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Navbar from "components/navbar";
-import Sidebar from "components/sidebar";
-import Footer from "components/footer/Footer";
-import routes from "routes";
-import { fetchAdmin } from "app/features/AdminSlice";
-import { useAppDispatch, useAppSelector } from "app/store";
-import { fetchStaff } from "app/features/StaffSlice";
-import { fetchIncidents } from "app/features/IncidentSlice";
+import Navbar from "@/components/navbar";
+import Sidebar from "@/components/sidebar";
+import Footer from "@/components/footer/Footer";
+import routes from "@/routes";
+import { fetchAdmin } from "@/app/features/AdminSlice";
+import { useAppDispatch, useAppSelector } from "@/app/store";
+import { fetchStaff } from "@/app/features/StaffSlice";
+import { fetchIncidents } from "@/app/features/IncidentSlice";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
@@ -34,7 +34,11 @@ export default function Admin(props: { [x: string]: any }) {
   }, [dispatch]);
 
   useEffect(() => {
-    if (admin.dept_name === "" || admin.station_name === "") return;
+    if (!admin || admin.dept_name === "" || admin.station_name === "") {
+      fetchAdmin(localStorage.getItem("id") as string);
+      console.log("fetching admin");
+      return;
+    }
     dispatch(
       fetchIncidents({
         deptName: admin.dept_name,
