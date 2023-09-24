@@ -7,23 +7,20 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { AiOutlinePlus } from "react-icons/ai";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 import AddTaskModal from "./AddTaskModal";
 
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from "@tanstack/match-sorter-utils";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
+import Pagination from "components/pagination/Pagination";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -35,15 +32,10 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
   addMeta({
     itemRank,
   });
-
-  // Return if the item should be filtered in/out
   return itemRank.passed;
 };
 
@@ -57,7 +49,6 @@ type RowObj = {
 function TaskTable(props: { tableData: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const columnHelper = createColumnHelper<RowObj>();
-  const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
@@ -137,7 +128,7 @@ function TaskTable(props: { tableData: any }) {
     globalFilterFn: fuzzyFilter,
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
-
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -228,6 +219,7 @@ function TaskTable(props: { tableData: any }) {
               })}
           </tbody>
         </table>
+        <Pagination table={table} />
       </div>
       <AddTaskModal isOpen={isOpen} onClose={onClose} />
     </Card>

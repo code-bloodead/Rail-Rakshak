@@ -12,6 +12,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingFn,
   sortingFns,
@@ -24,6 +25,7 @@ import {
   rankItem,
   compareItems,
 } from "@tanstack/match-sorter-utils";
+import Pagination from "components/pagination/Pagination";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -35,30 +37,21 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
   addMeta({
     itemRank,
   });
-
-  // Return if the item should be filtered in/out
   return itemRank.passed;
 };
 
 const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   let dir = 0;
-
-  // Only sort by rank if the column has ranking information
   if (rowA.columnFiltersMeta[columnId]) {
     dir = compareItems(
       rowA.columnFiltersMeta[columnId]?.itemRank!,
       rowB.columnFiltersMeta[columnId]?.itemRank!
     );
   }
-
-  // Provide an alphanumeric fallback for when the item ranks are equal
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir;
 };
 
@@ -170,6 +163,7 @@ function StaffTable(props: { tableData: any }) {
   const rerender = useReducer(() => ({}), {})[1];
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [data, setData] = useState<any>(() => [...defaultData]);
+
   const table = useReactTable({
     data,
     columns,
@@ -183,13 +177,14 @@ function StaffTable(props: { tableData: any }) {
     globalFilterFn: fuzzyFilter,
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
   return (
-    <Card extra={"w-full max-h-[80vh] sm:overflow-auto px-6"}>
+    <Card extra={"w-full h-full sm:overflow-auto px-6"}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
           Staff Table
@@ -274,6 +269,7 @@ function StaffTable(props: { tableData: any }) {
             })}
           </tbody>
         </table>
+        <Pagination table={table} />
       </div>
     </Card>
   );

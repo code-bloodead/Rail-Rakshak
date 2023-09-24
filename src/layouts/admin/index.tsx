@@ -50,8 +50,7 @@ export default function Admin(props: { [x: string]: any }) {
     getActiveRoute(routes);
   }, [location.pathname]);
 
-  const getActiveRoute = (routes: RoutesType[]): string | boolean => {
-    let activeRoute = "Dashboard";
+  const getActiveRoute = (routes: RoutesType[]): void => {
     for (let i = 0; i < routes.length; i++) {
       if (
         window.location.href.indexOf(
@@ -61,7 +60,6 @@ export default function Admin(props: { [x: string]: any }) {
         setCurrentRoute(routes[i].name);
       }
     }
-    return activeRoute;
   };
   const getActiveNavbar = (routes: RoutesType[]): string | boolean => {
     let activeNavbar = false;
@@ -105,6 +103,7 @@ export default function Admin(props: { [x: string]: any }) {
           {/* Routes */}
           <div className="h-full">
             <Navbar
+              currentRoute={currentRoute}
               onOpenSidenav={() => setOpen(true)}
               brandText={currentRoute}
               secondary={getActiveNavbar(routes)}
