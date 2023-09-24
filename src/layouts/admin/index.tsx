@@ -4,11 +4,10 @@ import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes";
-import { setAdmin } from "app/features/AdminSlice";
+import { fetchAdmin } from "app/features/AdminSlice";
 import { useAppDispatch, useAppSelector } from "app/store";
-import { getAdminByID } from "api/Admin";
-import { getStaffByDept } from "api/Staff";
-import { setStaff } from "app/features/StaffSlice";
+import { fetchStaff } from "app/features/StaffSlice";
+import { fetchIncidents } from "app/features/IncidentSlice";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
@@ -18,33 +17,33 @@ export default function Admin(props: { [x: string]: any }) {
   const [currentRoute, setCurrentRoute] = useState("Dashboard");
   const admin = useAppSelector((state) => state.admin.data);
 
-  const fetchData = async () => {
-    if (localStorage.getItem("token")) {
-      const res = await getAdminByID(localStorage.getItem("token"));
-      dispatch(setAdmin(res?.SUCCESS));
-    }
-  };
-
   useEffect(() => {
     window.addEventListener("resize", () =>
       window.innerWidth < 1200 ? setOpen(false) : setOpen(true)
     );
-    fetchData();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (localStorage.getItem("token")) {
-          const res = await getStaffByDept(admin.dept_name, admin.station_name);
-          dispatch(setStaff(res?.SUCCESS));
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    const handleReload = () => {
+      dispatch(fetchAdmin(localStorage.getItem("id") as string));
     };
+    window.addEventListener("load", handleReload);
+    return () => {
+      window.removeEventListener("load", handleReload);
+    };
+  }, [dispatch]);
 
-    fetchData();
+  useEffect(() => {
+    if (admin.dept_name === "" || admin.station_name === "") return;
+    dispatch(
+      fetchIncidents({
+        deptName: admin.dept_name,
+        stationName: admin.station_name,
+      })
+    );
+    dispatch(
+      fetchStaff({ deptName: admin.dept_name, stationName: admin.station_name })
+    );
   }, [admin, dispatch]);
 
   useEffect(() => {

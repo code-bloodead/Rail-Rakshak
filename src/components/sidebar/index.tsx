@@ -32,7 +32,7 @@ const Sidebar = (props: {
           Rail Rakshak
         </div>
         <div className="mt-5 text-base text-navy-700 dark:text-white">
-          ({admin.station_name})
+          ({admin?.station_name})
         </div>
       </div>
       <div className="mb-7 mt-2 h-px bg-gray-300 dark:bg-white/30" />

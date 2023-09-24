@@ -3,6 +3,7 @@ import Card from "components/card";
 
 import {
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -12,10 +13,38 @@ import {
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from "@tanstack/match-sorter-utils";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
+
 type RowObj = {
-  id: number;
-  date: string;
-  category: string;
+  id: string;
+  source: string;
+  type: string;
   status: string;
 };
 
@@ -40,10 +69,12 @@ function IncidentTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
-      id: "date",
+    columnHelper.accessor("type", {
+      id: "type",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          CATEGORY
+        </p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
@@ -51,11 +82,11 @@ function IncidentTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("category", {
-      id: "category",
+    columnHelper.accessor("source", {
+      id: "source",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          CATEGORY
+          SOURCE
         </p>
       ),
       cell: (info) => (
@@ -96,6 +127,9 @@ function IncidentTable(props: { tableData: any }) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
   });
   return (
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>

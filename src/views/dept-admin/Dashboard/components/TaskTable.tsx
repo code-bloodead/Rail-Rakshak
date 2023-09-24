@@ -1,19 +1,47 @@
 import { useState } from "react";
 import Card from "components/card";
-
+import { ImEnlarge } from "react-icons/im";
+import { AiOutlinePlus } from "react-icons/ai";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { MdCheckCircle } from "react-icons/md";
+import { BsClockHistory } from "react-icons/bs";
 import {
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ImEnlarge } from "react-icons/im";
-import { AiOutlinePlus } from "react-icons/ai";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import { MdCheckCircle } from "react-icons/md";
-import { BsClockHistory } from "react-icons/bs";
+
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from "@tanstack/match-sorter-utils";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 type RowObj = {
   id: number;
@@ -98,6 +126,9 @@ function TaskTable(props: { tableData: any }) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
   });
   return (
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>

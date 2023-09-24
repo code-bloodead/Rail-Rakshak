@@ -7,12 +7,12 @@ import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
 import RecentIncidentsTable from "./components/RecentIncidentsTable";
 import tableDataTask from "constants/tableDataTask";
-import tableDataIncident from "constants/tableDataIncident";
 import WeeklyIncidents from "./components/WeeklyIncidents";
 import { useAppSelector } from "app/store";
 
 const Dashboard = () => {
   const staff = useAppSelector((state) => state.staff.data);
+  const incidents = useAppSelector((state) => state.incidents.data);
 
   return (
     <div>
@@ -40,7 +40,9 @@ const Dashboard = () => {
 
       <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
         <WeeklyIncidents />
-        <RecentIncidentsTable tableData={tableDataIncident} />
+        {incidents?.length > 0 && (
+          <RecentIncidentsTable tableData={incidents} />
+        )}
       </div>
 
       {/* Tables & Charts */}

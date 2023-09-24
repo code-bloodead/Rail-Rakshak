@@ -2,36 +2,34 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { BACKEND_URL } from "constants/definitions";
 
-export interface Staff {
+export interface Incident {
   id: string;
-  staff_name: string;
-  station_name: string;
-  dept_name: string;
-  status: string;
-  photo: string;
+  title: string;
+  desc: string;
 }
 
-interface StaffState {
-  data: Staff[];
+interface IncidentState {
+  data: Incident[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: StaffState = {
+const initialState: IncidentState = {
   data: [],
   loading: false,
   error: null,
 };
 
-export const fetchStaff = createAsyncThunk(
-  "staff/fetch",
+export const fetchIncidents = createAsyncThunk(
+  "incident/fetch",
   async (payload: { deptName: string; stationName: string }, thunkAPI) => {
     try {
       const { deptName, stationName } = payload;
       const res = await axios.get(
-        `${BACKEND_URL}/staff/get_staffs_by_dept?dept_name=${deptName}&station_name=${stationName}`
+        `${BACKEND_URL}/incidents/get_incidents_by_dept_and_station?dept_name=${deptName}&station_name=${stationName}`
       );
-      return res.data.SUCCESS;
+      console.log(res.data);
+      return res.data;
     } catch (error) {
       console.log(error);
       throw error;
@@ -39,35 +37,35 @@ export const fetchStaff = createAsyncThunk(
   }
 );
 
-export const StaffSlice = createSlice({
-  name: "staff",
+export const IncidentSlice = createSlice({
+  name: "incidents",
   initialState,
   reducers: {
-    setStaff: (state, action: PayloadAction<Staff[]>) => {
+    setIncidents: (state, action: PayloadAction<Incident[]>) => {
       state.data = action.payload;
       state.error = null;
     },
-    clearStaff: (state) => {
+    clearIncidents: (state) => {
       state.data = [];
       state.error = null;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchStaff.pending, (state) => {
+    builder.addCase(fetchIncidents.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(fetchStaff.fulfilled, (state, action) => {
-      state.data = action.payload;
+    builder.addCase(fetchIncidents.fulfilled, (state, action) => {
+      state.data = action.payload.SUCCESS;
       state.loading = false;
       state.error = null;
     });
-    builder.addCase(fetchStaff.rejected, (state, action) => {
+    builder.addCase(fetchIncidents.rejected, (state, action) => {
       state.error = action.error.message || "An error occurred";
       state.loading = false;
     });
   },
 });
 
-export const { setStaff, clearStaff } = StaffSlice.actions;
-export default StaffSlice.reducer;
+export const { setIncidents, clearIncidents } = IncidentSlice.actions;
+export default IncidentSlice.reducer;

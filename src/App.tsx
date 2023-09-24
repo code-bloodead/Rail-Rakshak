@@ -12,7 +12,7 @@ const App = () => {
       <Route
         path="/"
         element={
-          localStorage.getItem("token") ? (
+          localStorage.getItem("persist") ? (
             localStorage.getItem("role") === "DEPT_ADMIN" ? (
               <Navigate to="/dept-admin/dashboard" replace />
             ) : (

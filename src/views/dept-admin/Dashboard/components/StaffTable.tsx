@@ -6,6 +6,7 @@ import { ImEnlarge } from "react-icons/im";
 
 import {
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -13,6 +14,34 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from "@tanstack/match-sorter-utils";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 type RowObj = {
   staff_name: string;
@@ -26,7 +55,6 @@ function StaffTable(props: { tableData: any }) {
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
-  console.log(defaultData);
   const columns = [
     columnHelper.accessor("photo", {
       id: "photo",
@@ -84,6 +112,9 @@ function StaffTable(props: { tableData: any }) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
   });
   return (
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>

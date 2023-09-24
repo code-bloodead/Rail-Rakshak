@@ -62,10 +62,11 @@ export default function SignIn() {
 
         if (res.data?.SUCCESS) {
           if (loggedIn) {
-            localStorage.setItem("token", res.data.SUCCESS.id);
-            localStorage.setItem("role", res.data.SUCCESS.role);
-            localStorage.setItem("dept", res.data.SUCCESS.dept_name);
+            localStorage.setItem("persist", "true");
           }
+          localStorage.setItem("id", res.data.SUCCESS.id);
+          localStorage.setItem("role", res.data.SUCCESS.role);
+          localStorage.setItem("dept", res.data.SUCCESS.dept_name);
           dispatch(setAdmin(res.data.SUCCESS));
           if (res.data.SUCCESS.role === "DEPT_ADMIN") {
             navigate("/dept-admin/dashboard");

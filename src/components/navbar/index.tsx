@@ -173,9 +173,10 @@ const Navbar = (props: {
                   to="/auth/sign-in"
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
                   onClick={() => {
-                    localStorage.removeItem("token");
+                    localStorage.removeItem("id");
                     localStorage.removeItem("role");
                     localStorage.removeItem("dept");
+                    localStorage.removeItem("persist");
                     dispatch(clearAdmin());
                   }}
                 >
