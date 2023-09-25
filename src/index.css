@@ -45,3 +45,15 @@ input:checked.defaultCheckbox::before {
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
+
+.chakra-modal__content-container {
+  z-index: 9999;
+}
+
+.chakra-modal__overlay {
+  z-index: 9998;
+}
+
+#status div {
+  right: 8px;
+}

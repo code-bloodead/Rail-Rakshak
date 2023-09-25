@@ -5,7 +5,14 @@ import { BACKEND_URL } from "@/constants/definitions";
 export interface Incident {
   id: string;
   title: string;
-  desc: string;
+  description: string;
+  image: string;
+  type: string;
+  station_name: string;
+  location: string;
+  source: string;
+  status: string;
+  created_at: Date;
 }
 
 interface IncidentState {

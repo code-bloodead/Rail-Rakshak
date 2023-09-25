@@ -15,11 +15,7 @@ import {
 } from "@tanstack/react-table";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from "@tanstack/match-sorter-utils";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

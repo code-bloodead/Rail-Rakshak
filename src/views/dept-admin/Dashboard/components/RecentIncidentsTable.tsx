@@ -13,11 +13,9 @@ import {
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from "@tanstack/match-sorter-utils";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { ImEnlarge } from "react-icons/im";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -29,15 +27,10 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
   addMeta({
     itemRank,
   });
-
-  // Return if the item should be filtered in/out
   return itemRank.passed;
 };
 
@@ -50,7 +43,7 @@ type RowObj = {
 
 function IncidentTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
-  // const navigate: NavigateFunction = useNavigate();
+  const navigate: NavigateFunction = useNavigate();
 
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -137,6 +130,15 @@ function IncidentTable(props: { tableData: any }) {
         <div className="text-xl font-bold text-navy-700 dark:text-white">
           Recent Incidents
         </div>
+        <button
+          onClick={() => {
+            navigate("/dept-admin/detected-incidents");
+          }}
+          className={`linear flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+        >
+          <ImEnlarge className="h-4 w-4" />
+        </button>
       </header>
 
       <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">

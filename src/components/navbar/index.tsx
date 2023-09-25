@@ -22,7 +22,6 @@ const Navbar = (props: {
   const admin = useAppSelector((state) => state.admin.data);
   const isSearchVisible =
     currentRoute === "Dashboard" || currentRoute === "CCTV Footage";
-  console.log(currentRoute, isSearchVisible);
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">

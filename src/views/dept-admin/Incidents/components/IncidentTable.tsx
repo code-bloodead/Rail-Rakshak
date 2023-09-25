@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Card from "@/components/card";
 import Pagination from "@/components/pagination/Pagination";
+import { FiEdit } from "react-icons/fi";
+import { FaRegEye } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa6";
 
 import {
   createColumnHelper,
@@ -17,6 +20,9 @@ import { BsClockHistory } from "react-icons/bs";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
+import { useDisclosure } from "@chakra-ui/hooks";
+import IncidentModal from "./IncidentModal";
+import { getDate, truncateString } from "@/constants/utils";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -36,10 +42,17 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 };
 
 type RowObj = {
-  id: number;
-  date: string;
-  category: string;
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  type: string;
+  station_name: string;
+  location: string;
+  source: string;
   status: string;
+  created_at: Date;
+  actions: string | undefined;
 };
 
 function IncidentTable(props: { tableData: any }) {
@@ -47,6 +60,23 @@ function IncidentTable(props: { tableData: any }) {
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
+  const [data, setData] = useState(() => [...defaultData]);
+  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
+  const [modalType, setModalType] = useState<string>("view");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleView = (rowObj: RowObj) => {
+    setModalType("view");
+    setSelectedRow(rowObj);
+    onOpen();
+  };
+
+  const handleEdit = (rowObj: RowObj) => {
+    setModalType("edit");
+    setSelectedRow(rowObj);
+    onOpen();
+  };
   const columns = [
     columnHelper.accessor("id", {
       id: "id",
@@ -61,7 +91,20 @@ function IncidentTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
+    columnHelper.accessor("title", {
+      id: "title",
+      header: () => (
+        <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
+          TITLE
+        </p>
+      ),
+      cell: (info: any) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {truncateString(info.getValue(), 10)}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("created_at", {
       id: "date",
       header: () => (
         <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
@@ -70,12 +113,12 @@ function IncidentTable(props: { tableData: any }) {
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
+          {getDate(info.getValue().toString())}
         </p>
       ),
     }),
-    columnHelper.accessor("category", {
-      id: "category",
+    columnHelper.accessor("type", {
+      id: "type",
       header: () => (
         <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
           CATEGORY
@@ -107,9 +150,45 @@ function IncidentTable(props: { tableData: any }) {
         </div>
       ),
     }),
+    columnHelper.accessor("actions", {
+      id: "actions",
+      header: () => (
+        <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
+          ACTIONS
+        </p>
+      ),
+      cell: (info: any) => (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              handleEdit(info.row.original);
+            }}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FiEdit className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => handleView(info.row.original)}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FaRegEye className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => {
+              console.log(info.row.original);
+            }}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FaTrash className="h-4 w-4" />
+          </button>
+        </div>
+      ),
+    }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+
   const table = useReactTable({
     data,
     columns,
@@ -128,6 +207,7 @@ function IncidentTable(props: { tableData: any }) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
   return (
     <Card extra={"w-full h-full sm:overflow-auto px-6"}>
       <header className="relative flex items-center justify-between pt-4">
@@ -204,6 +284,13 @@ function IncidentTable(props: { tableData: any }) {
 
         <Pagination table={table} />
       </div>
+      <IncidentModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        modalType={modalType}
+        incident={selectedRow}
+      />
     </Card>
   );
 }

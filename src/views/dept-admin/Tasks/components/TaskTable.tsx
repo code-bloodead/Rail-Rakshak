@@ -16,7 +16,6 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
-import AddTaskModal from "./AddTaskModal";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
@@ -221,7 +220,6 @@ function TaskTable(props: { tableData: any }) {
         </table>
         <Pagination table={table} />
       </div>
-      <AddTaskModal isOpen={isOpen} onClose={onClose} />
     </Card>
   );
 }
