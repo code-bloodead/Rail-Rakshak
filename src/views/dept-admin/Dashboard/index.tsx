@@ -9,10 +9,18 @@ import RecentIncidentsTable from "./components/RecentIncidentsTable";
 import tableDataTask from "@/constants/tableDataTask";
 import WeeklyIncidents from "./components/WeeklyIncidents";
 import { useAppSelector } from "@/app/store";
+import TableSkeleton from "./components/TableSkeleton";
+import WeeklyIncidentSkeleton from "./components/WeeklyIncidentSkeleton";
 
 const Dashboard = () => {
   const staff = useAppSelector((state) => state.staff.data);
   const incidents = useAppSelector((state) => state.incidents.data);
+  const detectedIncidents = incidents.filter(
+    (obj) => obj.source === "CCTV"
+  ).length;
+  const reportedIncidents = incidents.filter(
+    (obj) => obj.source === "User Report"
+  ).length;
 
   return (
     <div>
@@ -22,7 +30,7 @@ const Dashboard = () => {
         <Widget
           icon={<TbReport className="h-7 w-7" />}
           title={"Reported Incidents"}
-          subtitle={"33"}
+          subtitle={reportedIncidents.toString()}
         />
         <Widget
           icon={<FaTasks className="h-6 w-6" />}
@@ -32,7 +40,7 @@ const Dashboard = () => {
         <Widget
           icon={<MdReport className="h-7 w-7" />}
           title={"Detected Incidents"}
-          subtitle={"13"}
+          subtitle={detectedIncidents.toString()}
         />
       </div>
 
@@ -40,8 +48,11 @@ const Dashboard = () => {
 
       <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
         <WeeklyIncidents />
-        {incidents?.length > 0 && (
+
+        {incidents?.length > 0 ? (
           <RecentIncidentsTable tableData={incidents} />
+        ) : (
+          <TableSkeleton />
         )}
       </div>
 
