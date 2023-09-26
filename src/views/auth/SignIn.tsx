@@ -3,7 +3,6 @@ import Checkbox from "@/components/checkbox";
 import Card from "@/components/card";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "@/constants/definitions";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/store";
 import { setAdmin } from "@/app/features/AdminSlice";
@@ -58,7 +57,10 @@ export default function SignIn() {
       };
 
       try {
-        let res = await axios.post(`${BACKEND_URL}/auth/admin`, formData);
+        let res = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/admin`,
+          formData
+        );
 
         if (res.data?.SUCCESS) {
           if (loggedIn) {

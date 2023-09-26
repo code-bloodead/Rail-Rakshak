@@ -294,17 +294,21 @@ function IncidentTable(props: { tableData: any }) {
 
         <Pagination table={table} />
       </div>
-      <IncidentModal
-        isIncidentModalOpen={isIncidentModalOpen}
-        onAddTaskModalOpen={onAddTaskModalOpen}
-        onIncidentModalClose={onIncidentModalClose}
-        incident={selectedRow}
-      />
-      <AddTaskModal
-        isAddTaskModalOpen={isAddTaskModalOpen}
-        onAddTaskModalClose={onAddTaskModalClose}
-        incident={selectedRow}
-      />
+      {selectedRow && (
+        <>
+          <IncidentModal
+            isIncidentModalOpen={isIncidentModalOpen}
+            onAddTaskModalOpen={onAddTaskModalOpen}
+            onIncidentModalClose={onIncidentModalClose}
+            incident={selectedRow}
+          />
+          <AddTaskModal
+            isAddTaskModalOpen={isAddTaskModalOpen}
+            onAddTaskModalClose={onAddTaskModalClose}
+            incident={selectedRow}
+          />
+        </>
+      )}
     </Card>
   );
 }

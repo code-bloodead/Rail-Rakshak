@@ -1,16 +1,15 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BACKEND_URL } from "@/constants/definitions";
 
 export interface Task {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   assigned_to: string[];
   image: string;
-  created_at: Date;
+  created_at?: Date;
   deadline: string;
-  status: string;
+  status?: string;
   assc_incident: string;
   dept_name: string;
   station_name: string;
@@ -34,7 +33,9 @@ export const fetchTasks = createAsyncThunk(
     try {
       const { deptName, stationName } = payload;
       const res = await axios.get(
-        `${BACKEND_URL}/tasks/get_tasks_by_dept?dept_name=${deptName}&station_name=${stationName}`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/tasks/get_task_by_dept?dept_name=${deptName}&station_name=${stationName}`
       );
       console.log(res.data);
       return res.data;
@@ -49,7 +50,10 @@ export const addTask = createAsyncThunk(
   "task/add",
   async (payload: Task, thunkAPI) => {
     try {
-      const res = await axios.post(`${BACKEND_URL}/tasks/create_task`, payload);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/tasks/create_task`,
+        payload
+      );
       console.log(res.data);
       return res.data;
     } catch (error) {

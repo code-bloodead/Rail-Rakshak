@@ -15,11 +15,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from "@tanstack/match-sorter-utils";
+import { FaRegEye, FaUserClock } from "react-icons/fa";
+
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import { getDate } from "@/constants/utils";
+import { useAppSelector } from "@/app/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -31,31 +31,36 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
   addMeta({
     itemRank,
   });
-
-  // Return if the item should be filtered in/out
   return itemRank.passed;
 };
 
 type RowObj = {
-  id: number;
-  date: string;
-  assigned: string[];
-  status: string;
+  id?: string;
+  title: string;
+  description: string;
+  assigned_to: string[];
+  image: string;
+  created_at?: Date;
+  deadline: string;
+  status?: string;
+  assc_incident: string;
+  dept_name: string;
+  station_name: string;
+  actions?: string | undefined;
 };
 
 function TaskTable(props: { tableData: any }) {
+  const staff = useAppSelector((state) => state.staff.data);
   const columnHelper = createColumnHelper<RowObj>();
   const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
+
   const columns = [
     columnHelper.accessor("id", {
       id: "id",
@@ -70,18 +75,29 @@ function TaskTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
+    columnHelper.accessor("title", {
+      id: "title",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">TITLE</p>
+      ),
+      cell: (info: any) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("created_at", {
       id: "date",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
+          {getDate(info.getValue().toString())}
         </p>
       ),
     }),
-    columnHelper.accessor("assigned", {
+    columnHelper.accessor("assigned_to", {
       id: "assigned",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
@@ -90,7 +106,13 @@ function TaskTable(props: { tableData: any }) {
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue().join(", ")}
+          {info
+            .getValue()
+            .map((id) => {
+              const staffObj = staff.find((staffItem) => staffItem.id === id);
+              return staffObj ? staffObj.staff_name : null;
+            })
+            .join(", ") || "-"}
         </p>
       ),
     }),
@@ -105,12 +127,35 @@ function TaskTable(props: { tableData: any }) {
         <div className="flex items-center">
           {info.getValue() === "Completed" ? (
             <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
-          ) : info.getValue() === "In Progress" ? (
+          ) : info.getValue() === "Assigned" ? (
+            <FaUserClock className="me-1 text-teal-500 dark:text-teal-300" />
+          ) : (
             <BsClockHistory className="me-1 text-amber-500 dark:text-amber-300" />
-          ) : null}
+          )}
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
+        </div>
+      ),
+    }),
+    columnHelper.accessor("actions", {
+      id: "actions",
+      header: () => (
+        <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
+          ACTIONS
+        </p>
+      ),
+      cell: (info: any) => (
+        <div className="flex items-center">
+          <button
+            onClick={() => {
+              console.log(info.row.original);
+            }}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FaRegEye className="h-4 w-4" />
+          </button>
         </div>
       ),
     }),
@@ -170,7 +215,7 @@ function TaskTable(props: { tableData: any }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-4 pt-4 text-start"
+                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-1 pt-4 text-start"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -199,7 +244,11 @@ function TaskTable(props: { tableData: any }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className={`${
+                            cell.column.id === "actions"
+                              ? "min-w-[20px]"
+                              : "min-w-[80px] pr-1"
+                          }  border-white/0 py-3 `}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

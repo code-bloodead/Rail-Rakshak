@@ -57,3 +57,12 @@ input:checked.defaultCheckbox::before {
 #status div {
   right: 8px;
 }
+
+.searchWrapper {
+  border: none !important;
+}
+
+#search_input {
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+}

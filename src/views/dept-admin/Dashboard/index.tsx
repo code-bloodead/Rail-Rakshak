@@ -6,7 +6,6 @@ import Widget from "@/components/widget/Widget";
 import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
 import RecentIncidentsTable from "./components/RecentIncidentsTable";
-import tableDataTask from "@/constants/tableDataTask";
 import WeeklyIncidents from "./components/WeeklyIncidents";
 import { useAppSelector } from "@/app/store";
 import TableSkeleton from "./components/TableSkeleton";
@@ -15,6 +14,7 @@ import WeeklyIncidentSkeleton from "./components/WeeklyIncidentSkeleton";
 const Dashboard = () => {
   const staff = useAppSelector((state) => state.staff.data);
   const incidents = useAppSelector((state) => state.incidents.data);
+  const tasks = useAppSelector((state) => state.tasks.data);
   const detectedIncidents = incidents.filter(
     (obj) => obj.source === "CCTV"
   ).length;
@@ -61,12 +61,18 @@ const Dashboard = () => {
       <div className="col-span-2 mt-5 grid grid-cols-2 gap-5 md:grid-cols-3 ">
         {/* Check Table */}
         <div className="col-span-2">
-          <TaskTable tableData={tableDataTask} />
+          {tasks?.length > 0 ? (
+            <TaskTable tableData={tasks} />
+          ) : (
+            <TableSkeleton />
+          )}
         </div>
-        {staff?.length > 0 && (
-          <div className="grid grid-cols-1 rounded-[20px]">
+        {staff?.length > 0 ? (
+          <div className="grid grid-cols-1 col-span-2 md:col-span-1 rounded-[20px]">
             <StaffTable tableData={staff} />
           </div>
+        ) : (
+          <TableSkeleton />
         )}
       </div>
     </div>

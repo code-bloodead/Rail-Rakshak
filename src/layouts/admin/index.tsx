@@ -8,6 +8,7 @@ import { fetchAdmin } from "@/app/features/AdminSlice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { fetchStaff } from "@/app/features/StaffSlice";
 import { fetchIncidents } from "@/app/features/IncidentSlice";
+import { fetchTasks } from "@/app/features/TaskSlice";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
@@ -47,6 +48,9 @@ export default function Admin(props: { [x: string]: any }) {
     );
     dispatch(
       fetchStaff({ deptName: admin.dept_name, stationName: admin.station_name })
+    );
+    dispatch(
+      fetchTasks({ deptName: admin.dept_name, stationName: admin.station_name })
     );
   }, [admin, dispatch]);
 

@@ -1,6 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BACKEND_URL } from "@/constants/definitions";
 
 export interface Admin {
   id: string;
@@ -35,7 +34,7 @@ export const fetchAdmin = createAsyncThunk(
   async (id: string, thunkAPI) => {
     try {
       const res = await axios.get(
-        `${BACKEND_URL}/admin/get_admin_by_id?id=${id}`
+        `${import.meta.env.VITE_BACKEND_URL}/admin/get_admin_by_id?id=${id}`
       );
       return res.data.SUCCESS;
     } catch (error) {

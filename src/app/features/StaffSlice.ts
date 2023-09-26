@@ -1,6 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BACKEND_URL } from "@/constants/definitions";
 
 export interface Staff {
   id: string;
@@ -29,7 +28,9 @@ export const fetchStaff = createAsyncThunk(
     try {
       const { deptName, stationName } = payload;
       const res = await axios.get(
-        `${BACKEND_URL}/staff/get_staffs_by_dept?dept_name=${deptName}&station_name=${stationName}`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/staff/get_staffs_by_dept?dept_name=${deptName}&station_name=${stationName}`
       );
       return res.data.SUCCESS;
     } catch (error) {
