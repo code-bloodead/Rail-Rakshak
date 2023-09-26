@@ -27,6 +27,7 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["./src/assets/*"],
+      "@chakra-ui/react": ["node_modules/@chakra-ui/react"],
       "@/*": ["./src/*"]
     }
   },

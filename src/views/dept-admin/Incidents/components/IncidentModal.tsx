@@ -7,15 +7,13 @@ import {
 } from "@chakra-ui/modal";
 import { Select, Option } from "@material-tailwind/react";
 import Card from "@/components/card";
-import { MdCheckCircle } from "react-icons/md";
+import { MdCheckCircle, MdOutlinePostAdd } from "react-icons/md";
 import { BsCardText, BsClockHistory } from "react-icons/bs";
 import { getDateTime } from "@/constants/utils";
 import { BiTimeFive, BiCategoryAlt } from "react-icons/bi";
 import { MdOutlineLocationOn } from "react-icons/md";
 import { IoImages } from "react-icons/io5";
-import { FiEdit } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
-import { useState } from "react";
 
 type Incident = {
   id: string;
@@ -33,30 +31,35 @@ type Incident = {
 
 interface IncidentModalProps {
   incident: Incident;
-  modalType: string;
-  isOpen: boolean;
-  onClose: () => void;
-  onOpen: () => void;
+  isIncidentModalOpen: boolean;
+  onIncidentModalClose: () => void;
+  onAddTaskModalOpen: () => void;
 }
 
 const IncidentModal = ({
-  isOpen,
-  onClose,
-  modalType,
-  onOpen,
+  isIncidentModalOpen,
+  onIncidentModalClose,
+  onAddTaskModalOpen,
   incident,
 }: IncidentModalProps) => {
-  const [incidentStatus, setIncidentStatus] = useState<string>(
-    incident?.status ? incident?.status : "Pending"
-  );
+  const handleAddTask = (incident: Incident) => {
+    onIncidentModalClose();
+    onAddTaskModalOpen();
+  };
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal
+        isOpen={isIncidentModalOpen}
+        onClose={onIncidentModalClose}
+        size="xl"
+        isCentered
+        scrollBehavior="inside"
+      >
         <ModalOverlay
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[5vh] sm:top-[8vh]">
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[3vh] sm:top-[5vh]">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
           <ModalBody>
             <Card extra="px-[30px] pt-[35px] pb-[40px] w-[85vw] max-w-[950px] flex flex-col !z-[1004]">
@@ -124,8 +127,8 @@ const IncidentModal = ({
                   >
                     Status:
                   </label>
-                  {modalType === "edit" ? (
-                    <Select
+
+                  {/* <Select
                       // disabled={true}
                       id="status"
                       // onChange={(e) => console.log(e)}
@@ -151,18 +154,17 @@ const IncidentModal = ({
                         Resolved
                       </Option>
                     </Select>
-                  ) : (
-                    <div className="flex items-center">
-                      <p className="relative mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3">
-                        {incidentStatus === "Pending" ? (
-                          <BsClockHistory className="me-2 text-amber-500 dark:text-amber-300 inline" />
-                        ) : (
-                          <MdCheckCircle className="me-2 text-green-500 dark:text-green-300 inline" />
-                        )}
-                        {incidentStatus}
-                      </p>
-                    </div>
-                  )}
+                 */}
+                  <div className="flex items-center">
+                    <p className="relative mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3">
+                      {incident?.status === "Pending" ? (
+                        <BsClockHistory className="me-2 text-amber-500 dark:text-amber-300 inline" />
+                      ) : (
+                        <MdCheckCircle className="me-2 text-green-500 dark:text-green-300 inline" />
+                      )}
+                      {incident?.status}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-row flex-wrap mt-3">
@@ -234,18 +236,18 @@ const IncidentModal = ({
 
               <div className="mt-4 flex justify-center gap-4">
                 <button
-                  onClick={() => console.log("Edit")}
+                  onClick={() => handleAddTask(incident)}
                   className={` flex items-center justify-center rounded-lg bg-navy-50  font-medium text-brand-600 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10 p-3`}
                 >
-                  <FiEdit className="h-5 w-5 mr-2" /> Edit
+                  <MdOutlinePostAdd className="h-6 w-6 mr-2" /> Create Task
                 </button>
                 <button
                   onClick={() => console.log("Delete")}
                   className={` flex items-center justify-center rounded-lg bg-navy-50   font-medium text-brand-600 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10 p-3`}
                 >
-                  <FaTrash className="h-5 w-5 mr-2" /> Delete
+                  <FaTrash className="h-4 w-4 mr-2" /> Delete
                 </button>
               </div>
             </Card>

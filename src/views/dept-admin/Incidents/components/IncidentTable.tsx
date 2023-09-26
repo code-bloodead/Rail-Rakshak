@@ -4,6 +4,7 @@ import Pagination from "@/components/pagination/Pagination";
 import { FiEdit } from "react-icons/fi";
 import { FaRegEye } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
+import { MdOutlinePostAdd } from "react-icons/md";
 
 import {
   createColumnHelper,
@@ -23,6 +24,7 @@ import { FiSearch } from "react-icons/fi";
 import { useDisclosure } from "@chakra-ui/hooks";
 import IncidentModal from "./IncidentModal";
 import { getDate, truncateString } from "@/constants/utils";
+import AddTaskModal from "./AddTaskModal";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -63,19 +65,26 @@ function IncidentTable(props: { tableData: any }) {
   const [data, setData] = useState(() => [...defaultData]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
-  const [modalType, setModalType] = useState<string>("view");
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const {
+    isOpen: isIncidentModalOpen,
+    onOpen: onIncidentModalOpen,
+    onClose: onIncidentModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isAddTaskModalOpen,
+    onOpen: onAddTaskModalOpen,
+    onClose: onAddTaskModalClose,
+  } = useDisclosure();
   const handleView = (rowObj: RowObj) => {
-    setModalType("view");
     setSelectedRow(rowObj);
-    onOpen();
+    onIncidentModalOpen();
   };
 
-  const handleEdit = (rowObj: RowObj) => {
-    setModalType("edit");
+  const handleAddTask = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
-    onOpen();
+    onAddTaskModalOpen();
   };
   const columns = [
     columnHelper.accessor("id", {
@@ -100,7 +109,7 @@ function IncidentTable(props: { tableData: any }) {
       ),
       cell: (info: any) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {truncateString(info.getValue(), 10)}
+          {truncateString(info.getValue(), 18)}
         </p>
       ),
     }),
@@ -161,13 +170,14 @@ function IncidentTable(props: { tableData: any }) {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => {
-              handleEdit(info.row.original);
+              handleAddTask(info.row.original);
             }}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
           >
-            <FiEdit className="h-4 w-4" />
+            <MdOutlinePostAdd className="h-4 w-4" />
           </button>
+
           <button
             onClick={() => handleView(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
@@ -285,10 +295,14 @@ function IncidentTable(props: { tableData: any }) {
         <Pagination table={table} />
       </div>
       <IncidentModal
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-        modalType={modalType}
+        isIncidentModalOpen={isIncidentModalOpen}
+        onAddTaskModalOpen={onAddTaskModalOpen}
+        onIncidentModalClose={onIncidentModalClose}
+        incident={selectedRow}
+      />
+      <AddTaskModal
+        isAddTaskModalOpen={isAddTaskModalOpen}
+        onAddTaskModalClose={onAddTaskModalClose}
         incident={selectedRow}
       />
     </Card>

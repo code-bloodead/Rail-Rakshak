@@ -8,9 +8,8 @@ export interface Task {
   description: string;
   assigned_to: string[];
   image: string;
-  created_at: string;
+  created_at: Date;
   deadline: string;
-  type: string;
   status: string;
   assc_incident: string;
   dept_name: string;
