@@ -87,7 +87,7 @@ export default function SignIn() {
       {/* Sign in section */}
       <Card
         extra={
-          "items-center flex-col w-[370px]  min-h-[55vh] p-[16px] bg-cover mt-8 py-8"
+          "items-center flex-col w-[370px]  min-h-[55vh] p-[16px] bg-cover mt-8 py-8 shadow-3xl"
         }
       >
         <form onSubmit={handleSubmit} autoComplete="off" className="w-95p">

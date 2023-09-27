@@ -15,11 +15,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { FaRegEye, FaUserClock } from "react-icons/fa";
+import { FaRegEye, FaTrash, FaUserClock } from "react-icons/fa";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { getDate } from "@/constants/utils";
 import { useAppSelector } from "@/app/store";
+import ViewTaskModal from "./ViewTaskModal";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -60,6 +62,18 @@ function TaskTable(props: { tableData: any }) {
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
+  const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
+
+  const {
+    isOpen: isViewTaskModalOpen,
+    onOpen: onViewTaskModalOpen,
+    onClose: onViewTaskModalClose,
+  } = useDisclosure();
+
+  const handleView = (rowObj: RowObj) => {
+    setSelectedRow(rowObj);
+    onViewTaskModalOpen();
+  };
 
   const columns = [
     columnHelper.accessor("id", {
@@ -146,11 +160,9 @@ function TaskTable(props: { tableData: any }) {
         </p>
       ),
       cell: (info: any) => (
-        <div className="flex items-center">
+        <div className="flex items-center ml-1">
           <button
-            onClick={() => {
-              console.log(info.row.original);
-            }}
+            onClick={() => handleView(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
           >
@@ -176,94 +188,106 @@ function TaskTable(props: { tableData: any }) {
     },
   });
   return (
-    <Card extra={"w-full h-full sm:overflow-auto px-6"}>
-      <header className="relative flex items-center justify-between pt-4">
-        <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Tasks Table
-        </div>
+    <>
+      <Card extra={"w-full h-full sm:overflow-auto px-6"}>
+        <header className="relative flex items-center justify-between pt-4">
+          <div className="text-xl font-bold text-navy-700 dark:text-white">
+            Tasks Table
+          </div>
 
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => {
-              navigate("/dept-admin/tasks");
-            }}
-            className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem] text-xl font-bold text-brand-500 transition duration-200
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => {
+                navigate("/dept-admin/tasks");
+              }}
+              className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem] text-xl font-bold text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
-          >
-            <AiOutlinePlus className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => {
-              navigate("/dept-admin/tasks");
-            }}
-            className={`linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
+            >
+              <AiOutlinePlus className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => {
+                navigate("/dept-admin/tasks");
+              }}
+              className={`linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
-          >
-            <ImEnlarge className="h-4 w-4" />
-          </button>
-        </div>
-      </header>
+            >
+              <ImEnlarge className="h-4 w-4" />
+            </button>
+          </div>
+        </header>
 
-      <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+        <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="!border-px !border-gray-400"
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-1 pt-4 text-start"
+                      >
+                        <div className="items-center justify-between text-xs text-gray-200">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: "",
+                            desc: "",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice(0, 6)
+                .map((row) => {
                   return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-1 pt-4 text-start"
-                    >
-                      <div className="items-center justify-between text-xs text-gray-200">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: "",
-                          desc: "",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={`${
+                              cell.column.id === "actions"
+                                ? "min-w-[20px]"
+                                : "min-w-[80px] pr-1"
+                            }  border-white/0 py-3 `}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   );
                 })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table
-              .getRowModel()
-              .rows.slice(0, 6)
-              .map((row) => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td
-                          key={cell.id}
-                          className={`${
-                            cell.column.id === "actions"
-                              ? "min-w-[20px]"
-                              : "min-w-[80px] pr-1"
-                          }  border-white/0 py-3 `}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+            </tbody>
+          </table>
+        </div>
+      </Card>
+      {selectedRow && (
+        <ViewTaskModal
+          onViewTaskModalClose={onViewTaskModalClose}
+          isViewTaskModalOpen={isViewTaskModalOpen}
+          task={selectedRow}
+        />
+      )}
+    </>
   );
 }
 

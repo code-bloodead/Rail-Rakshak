@@ -86,6 +86,7 @@ function IncidentTable(props: { tableData: any }) {
     setSelectedRow(rowObj);
     onAddTaskModalOpen();
   };
+
   const columns = [
     columnHelper.accessor("id", {
       id: "id",

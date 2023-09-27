@@ -8,7 +8,7 @@ import { MdBarChart } from "react-icons/md";
 
 const WeeklyIncidents = () => {
   return (
-    <Card extra="flex flex-col bg-white w-full rounded-3xl py-6 px-2 text-center">
+    <Card extra="flex flex-col bg-white w-full rounded-3xl py-6 px-2 text-center col-span-2">
       <div className="mb-auto flex items-center justify-between px-6">
         <h2 className="text-lg font-bold text-navy-700 dark:text-white">
           Incidents (Past 7 Days)

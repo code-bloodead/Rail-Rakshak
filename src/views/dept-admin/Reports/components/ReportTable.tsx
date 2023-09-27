@@ -11,12 +11,17 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { MdCheckCircle } from "react-icons/md";
+import { MdCheckCircle, MdOutlinePostAdd } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
 import Pagination from "@/components/pagination/Pagination";
+import { FaRegEye, FaTrash } from "react-icons/fa";
+import { getDate, truncateString } from "@/constants/utils";
+import { useDisclosure } from "@chakra-ui/hooks";
+import ReportModal from "./ReportModal";
+import AddTaskModal from "./AddTaskModal";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -36,10 +41,17 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 };
 
 type RowObj = {
-  id: number;
-  date: string;
-  category: string;
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  type: string;
+  station_name: string;
+  location: string;
+  source: string;
   status: string;
+  created_at: Date;
+  actions: string | undefined;
 };
 
 function ReportTable(props: { tableData: any }) {
@@ -47,6 +59,31 @@ function ReportTable(props: { tableData: any }) {
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
   let defaultData = tableData;
+
+  const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
+
+  const {
+    isOpen: isReportModalOpen,
+    onOpen: onReportModalOpen,
+    onClose: onReportModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isAddTaskModalOpen,
+    onOpen: onAddTaskModalOpen,
+    onClose: onAddTaskModalClose,
+  } = useDisclosure();
+
+  const handleView = (rowObj: RowObj) => {
+    setSelectedRow(rowObj);
+    onReportModalOpen();
+  };
+
+  const handleAddTask = (rowObj: RowObj) => {
+    setSelectedRow(rowObj);
+    onAddTaskModalOpen();
+  };
+
   const columns = [
     columnHelper.accessor("id", {
       id: "id",
@@ -61,7 +98,20 @@ function ReportTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
+    columnHelper.accessor("title", {
+      id: "title",
+      header: () => (
+        <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
+          TITLE
+        </p>
+      ),
+      cell: (info: any) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {truncateString(info.getValue(), 18)}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("created_at", {
       id: "date",
       header: () => (
         <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
@@ -70,19 +120,19 @@ function ReportTable(props: { tableData: any }) {
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
+          {getDate(info.getValue().toString())}
         </p>
       ),
     }),
-    columnHelper.accessor("category", {
-      id: "category",
+    columnHelper.accessor("type", {
+      id: "type",
       header: () => (
         <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
           CATEGORY
         </p>
       ),
       cell: (info) => (
-        <p className="mr-1 inline text-sm font-bold text-navy-700 dark:text-white">
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
       ),
@@ -104,6 +154,44 @@ function ReportTable(props: { tableData: any }) {
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
+        </div>
+      ),
+    }),
+    columnHelper.accessor("actions", {
+      id: "actions",
+      header: () => (
+        <p className="mr-1 inline text-sm font-bold text-gray-600 dark:text-white">
+          ACTIONS
+        </p>
+      ),
+      cell: (info: any) => (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              handleAddTask(info.row.original);
+            }}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <MdOutlinePostAdd className="h-4 w-4" />
+          </button>
+
+          <button
+            onClick={() => handleView(info.row.original)}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FaRegEye className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => {
+              console.log(info.row.original);
+            }}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <FaTrash className="h-4 w-4" />
+          </button>
         </div>
       ),
     }),
@@ -129,81 +217,104 @@ function ReportTable(props: { tableData: any }) {
     debugTable: true,
   });
   return (
-    <Card extra={"w-full h-full sm:overflow-auto px-6"}>
-      <header className="relative flex items-center justify-between pt-4">
-        <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Reported Incidents
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex h-full min-h-[32px] items-center rounded-lg bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
-            <p className="pl-3 pr-2 text-xl">
-              <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
-            </p>
-            <input
-              type="text"
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search..."
-              className="block h-full min-h-[32px] w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
-            />
+    <>
+      <Card extra={"w-full h-full sm:overflow-auto px-6"}>
+        <header className="relative flex items-center justify-between pt-4">
+          <div className="text-xl font-bold text-navy-700 dark:text-white">
+            Reported Incidents
           </div>
-        </div>
-      </header>
+          <div className="flex items-center justify-between">
+            <div className="flex h-full min-h-[32px] items-center rounded-lg bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
+              <p className="pl-3 pr-2 text-xl">
+                <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
+              </p>
+              <input
+                type="text"
+                value={globalFilter ?? ""}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                placeholder="Search..."
+                className="block h-full min-h-[32px] w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
+              />
+            </div>
+          </div>
+        </header>
 
-      <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+        <div className="mt-2 overflow-x-scroll xl:overflow-x-hidden">
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="!border-px !border-gray-400"
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-4 pt-4 text-start"
+                      >
+                        <div className="items-center justify-between text-xs text-gray-600">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: "▲",
+                            desc: "▼",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice(0, 6)
+                .map((row) => {
                   return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-4 pt-4 text-start"
-                    >
-                      <div className="items-center justify-between text-xs text-gray-600">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: "▲",
-                          desc: "▼",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className="border-white/0 py-3  pr-4"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   );
                 })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table
-              .getRowModel()
-              .rows.slice(0, 6)
-              .map((row) => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td key={cell.id} className="border-white/0 py-3  pr-4">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        <Pagination table={table} />
-      </div>
-    </Card>
+            </tbody>
+          </table>
+          <Pagination table={table} />
+        </div>
+      </Card>
+      {selectedRow && (
+        <>
+          <ReportModal
+            isReportModalOpen={isReportModalOpen}
+            onAddTaskModalOpen={onAddTaskModalOpen}
+            onReportModalClose={onReportModalClose}
+            incident={selectedRow}
+          />
+          <AddTaskModal
+            isAddTaskModalOpen={isAddTaskModalOpen}
+            onAddTaskModalClose={onAddTaskModalClose}
+            incident={selectedRow}
+          />
+        </>
+      )}
+    </>
   );
 }
 

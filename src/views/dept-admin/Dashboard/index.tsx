@@ -21,6 +21,9 @@ const Dashboard = () => {
   const reportedIncidents = incidents.filter(
     (obj) => obj.source === "User Report"
   ).length;
+  const completedTasks = tasks.filter(
+    (obj) => obj.status === "Completed"
+  ).length;
 
   return (
     <div>
@@ -35,7 +38,7 @@ const Dashboard = () => {
         <Widget
           icon={<FaTasks className="h-6 w-6" />}
           title={"Completed Tasks"}
-          subtitle={"23"}
+          subtitle={completedTasks.toString()}
         />
         <Widget
           icon={<MdReport className="h-7 w-7" />}
@@ -46,13 +49,13 @@ const Dashboard = () => {
 
       {/* Charts */}
 
-      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-5">
         <WeeklyIncidents />
 
         {incidents?.length > 0 ? (
           <RecentIncidentsTable tableData={incidents} />
         ) : (
-          <TableSkeleton />
+          <TableSkeleton type="recentIncident" />
         )}
       </div>
 
@@ -64,7 +67,7 @@ const Dashboard = () => {
           {tasks?.length > 0 ? (
             <TaskTable tableData={tasks} />
           ) : (
-            <TableSkeleton />
+            <TableSkeleton type="taskTable" />
           )}
         </div>
         {staff?.length > 0 ? (
@@ -72,7 +75,7 @@ const Dashboard = () => {
             <StaffTable tableData={staff} />
           </div>
         ) : (
-          <TableSkeleton />
+          <TableSkeleton type="staffTable" />
         )}
       </div>
     </div>

@@ -1,12 +1,16 @@
 import Card from "@/components/card";
 
-const TableSkeleton = () => {
+interface TableSkeletonProps {
+  type: string;
+}
+
+const TableSkeleton = ({ type }: TableSkeletonProps) => {
   return (
     <>
       <Card
-        extra={
-          "w-full overflow-hidden sm:overflow-auto px-6 p-4 space-y-4 border border-gray-200 divide-y bg-white rounded shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700 "
-        }
+        extra={`w-full overflow-hidden sm:overflow-auto px-6 p-4 space-y-4 border border-gray-200 divide-y bg-white rounded shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700 ${
+          type === "recentIncident" ? "col-span-3" : ""
+        }`}
       >
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={index} className="flex items-center justify-between py-4">

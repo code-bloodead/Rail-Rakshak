@@ -29,28 +29,28 @@ type Incident = {
   actions: string | undefined;
 };
 
-interface IncidentModalProps {
+interface ReportModalProps {
   incident: Incident;
-  isIncidentModalOpen: boolean;
-  onIncidentModalClose: () => void;
+  isReportModalOpen: boolean;
+  onReportModalClose: () => void;
   onAddTaskModalOpen: () => void;
 }
 
-const IncidentModal = ({
-  isIncidentModalOpen,
-  onIncidentModalClose,
+const ReportModal = ({
+  isReportModalOpen,
+  onReportModalClose,
   onAddTaskModalOpen,
   incident,
-}: IncidentModalProps) => {
+}: ReportModalProps) => {
   const handleAddTask = (incident: Incident) => {
-    onIncidentModalClose();
+    onReportModalClose();
     onAddTaskModalOpen();
   };
   return (
     <>
       <Modal
-        isOpen={isIncidentModalOpen}
-        onClose={onIncidentModalClose}
+        isOpen={isReportModalOpen}
+        onClose={onReportModalClose}
         size="xl"
         isCentered
         scrollBehavior="inside"
@@ -127,34 +127,6 @@ const IncidentModal = ({
                   >
                     Status:
                   </label>
-
-                  {/* <Select
-                      // disabled={true}
-                      id="status"
-                      // onChange={(e) => console.log(e)}
-                      value={incidentStatus}
-                      className=" relative mt-2 flex h-12 w-full items-center justify-start rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
-                    >
-                      <Option
-                        key="Pending"
-                        value="Pending"
-                        onClick={() => setIncidentStatus("Pending")}
-                      >
-                        <BsClockHistory className="me-2 text-amber-500 dark:text-amber-300 inline" />{" "}
-                        Pending
-                      </Option>
-                      <hr />
-                      <Option
-                        key="Resolved"
-                        value="Resolved"
-                        className="mt-3"
-                        onClick={() => setIncidentStatus("Resolved")}
-                      >
-                        <MdCheckCircle className="me-2 text-green-500 dark:text-green-300 inline" />{" "}
-                        Resolved
-                      </Option>
-                    </Select>
-                 */}
                   <div className="flex items-center">
                     <p className="relative mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3">
                       {incident?.status === "Pending" ? (
@@ -258,4 +230,4 @@ const IncidentModal = ({
   );
 };
 
-export default IncidentModal;
+export default ReportModal;

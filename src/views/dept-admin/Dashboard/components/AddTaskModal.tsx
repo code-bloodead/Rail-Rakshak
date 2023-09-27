@@ -111,7 +111,7 @@ const AddTaskModal = ({
         <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[2vh] sm:top-[3vh]">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
           <ModalBody>
-            <Card extra="px-[30px] pt-[35px] pb-[40px] w-[85vw] max-w-[950px] flex flex-col !z-[1004]">
+            <Card extra="px-[30px] pt-[35px] pb-[40px] w-[85vw] max-w-[950px] flex flex-col !z-[1004] md-max:h-[95vh] overflow-y-auto">
               <h1 className="mb-4 text-2xl text-navy-700 dark:text-white font-bold">
                 Create Task
               </h1>
@@ -212,7 +212,7 @@ const AddTaskModal = ({
                   </AccordionItem>{" "}
                 </Accordion>
               </div>
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex-col basis-2/5 mr-2">
                   <div className="flex items-center">
                     <IoImages fill="#1b254b" />
