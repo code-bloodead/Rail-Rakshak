@@ -37,7 +37,6 @@ export const fetchTasks = createAsyncThunk(
           import.meta.env.VITE_BACKEND_URL
         }/tasks/get_task_by_dept?dept_name=${deptName}&station_name=${stationName}`
       );
-      console.log(res.data);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -56,6 +55,22 @@ export const addTask = createAsyncThunk(
       );
       console.log(res.data);
       return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const deleteTask = createAsyncThunk(
+  "task/delete",
+  async (payload: { id: string }, thunkAPI) => {
+    try {
+      const { id } = payload;
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/tasks/delete_task?task_id=${id}`
+      );
+      return id;
     } catch (error) {
       console.log(error);
       throw error;
@@ -100,6 +115,19 @@ export const TaskSlice = createSlice({
       state.error = null;
     });
     builder.addCase(addTask.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || null;
+    });
+    builder.addCase(deleteTask.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteTask.fulfilled, (state, action) => {
+      state.data = state.data.filter((task) => task.id !== action.payload);
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(deleteTask.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || null;
     });

@@ -5,11 +5,11 @@ import { TbReport } from "react-icons/tb";
 import Widget from "@/components/widget/Widget";
 import TaskTable from "./components/TaskTable";
 import StaffTable from "./components/StaffTable";
-import RecentIncidentsTable from "./components/RecentIncidentsTable";
 import WeeklyIncidents from "./components/WeeklyIncidents";
 import { useAppSelector } from "@/app/store";
 import TableSkeleton from "./components/TableSkeleton";
 import WeeklyIncidentSkeleton from "./components/WeeklyIncidentSkeleton";
+import IncidentTable from "./components/IncidentTable";
 
 const Dashboard = () => {
   const staff = useAppSelector((state) => state.staff.data);
@@ -53,7 +53,7 @@ const Dashboard = () => {
         <WeeklyIncidents />
 
         {incidents?.length > 0 ? (
-          <RecentIncidentsTable tableData={incidents} />
+          <IncidentTable tableData={incidents} />
         ) : (
           <TableSkeleton type="recentIncident" />
         )}

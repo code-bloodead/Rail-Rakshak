@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "@/components/card";
 
 import {
@@ -16,14 +16,18 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdCheckCircle } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
+import { TbEdit } from "react-icons/tb";
 
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
 import Pagination from "@/components/pagination/Pagination";
 import { FaRegEye, FaTrash, FaUserClock } from "react-icons/fa";
 import { getDate } from "@/constants/utils";
-import { useAppSelector } from "@/app/store";
-import ViewTaskModal from "./ViewTaskModal";
+import { useAppDispatch, useAppSelector } from "@/app/store";
+import ViewTaskModal from "@/components/modal/ViewTaskModal";
+import { deleteTask } from "@/app/features/TaskSlice";
+import NewTaskModal from "@/components/modal/NewTaskModal";
+import { set } from "video.js/dist/types/tech/middleware";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -61,9 +65,12 @@ function TaskTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
-  let defaultData = tableData;
   const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
   const staff = useAppSelector((state) => state.staff.data);
+  const [editTask, setEditTask] = useState<boolean>(false);
+  // eslint-disable-next-line
+  const [data, setData] = useState(() => [...tableData]);
+  const dispatch = useAppDispatch();
 
   const {
     isOpen: isViewTaskModalOpen,
@@ -71,10 +78,33 @@ function TaskTable(props: { tableData: any }) {
     onClose: onViewTaskModalClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isNewTaskModalOpen,
+    onOpen: onNewTaskModalOpen,
+    onClose: onNewTaskModalClose,
+  } = useDisclosure();
+
   const handleView = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
+    setEditTask(false);
     onViewTaskModalOpen();
   };
+
+  const handleEdit = (rowObj: RowObj) => {
+    setSelectedRow(rowObj);
+    setEditTask(true);
+    onViewTaskModalOpen();
+  };
+
+  const handleNewTask = () => {
+    onNewTaskModalOpen();
+  };
+
+  const handleDelete = (rowObj: RowObj) => {
+    dispatch(deleteTask({ id: rowObj.id }));
+    setData(data.filter((item) => item.id !== rowObj.id));
+  };
+
   const columns = [
     columnHelper.accessor("id", {
       id: "id",
@@ -169,9 +199,14 @@ function TaskTable(props: { tableData: any }) {
             <FaRegEye className="h-4 w-4" />
           </button>
           <button
-            onClick={() => {
-              console.log(info.row.original);
-            }}
+            onClick={() => handleEdit(info.row.original)}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <TbEdit className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => handleDelete(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
           >
@@ -181,7 +216,11 @@ function TaskTable(props: { tableData: any }) {
       ),
     }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
+
+  useEffect(() => {
+    setData(tableData);
+  }, [tableData]);
+
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const table = useReactTable({
     data,
@@ -223,7 +262,7 @@ function TaskTable(props: { tableData: any }) {
               />
             </div>
             <button
-              onClick={() => console.log("New Task")}
+              onClick={() => handleNewTask()}
               className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
             >
@@ -293,12 +332,19 @@ function TaskTable(props: { tableData: any }) {
         </div>
       </Card>
       {selectedRow && (
-        <ViewTaskModal
-          onViewTaskModalClose={onViewTaskModalClose}
-          isViewTaskModalOpen={isViewTaskModalOpen}
-          task={selectedRow}
-        />
+        <>
+          <ViewTaskModal
+            onViewTaskModalClose={onViewTaskModalClose}
+            isViewTaskModalOpen={isViewTaskModalOpen}
+            task={selectedRow}
+            edit={editTask}
+          />
+        </>
       )}
+      <NewTaskModal
+        onNewTaskModalClose={onNewTaskModalClose}
+        isNewTaskModalOpen={isNewTaskModalOpen}
+      />
     </>
   );
 }

@@ -20,8 +20,10 @@ import Pagination from "@/components/pagination/Pagination";
 import { FaRegEye, FaTrash } from "react-icons/fa";
 import { getDate, truncateString } from "@/constants/utils";
 import { useDisclosure } from "@chakra-ui/hooks";
-import ReportModal from "./ReportModal";
-import AddTaskModal from "./AddTaskModal";
+import IncidentModal from "@/components/modal/IncidentModal";
+import ConvertTaskModal from "@/components/modal/ConvertTaskModal";
+import { useAppDispatch } from "@/app/store";
+import { deleteIncident } from "@/app/features/IncidentSlice";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -58,30 +60,30 @@ function ReportTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
-  let defaultData = tableData;
+  const dispatch = useAppDispatch();
 
   const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
 
   const {
-    isOpen: isReportModalOpen,
-    onOpen: onReportModalOpen,
-    onClose: onReportModalClose,
+    isOpen: isIncidentModalOpen,
+    onOpen: onIncidentModalOpen,
+    onClose: onIncidentModalClose,
   } = useDisclosure();
 
   const {
-    isOpen: isAddTaskModalOpen,
-    onOpen: onAddTaskModalOpen,
-    onClose: onAddTaskModalClose,
+    isOpen: isConvertTaskModalOpen,
+    onOpen: onConvertTaskModalOpen,
+    onClose: onConvertTaskModalClose,
   } = useDisclosure();
 
   const handleView = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
-    onReportModalOpen();
+    onIncidentModalOpen();
   };
 
   const handleAddTask = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
-    onAddTaskModalOpen();
+    onConvertTaskModalOpen();
   };
 
   const columns = [
@@ -185,7 +187,8 @@ function ReportTable(props: { tableData: any }) {
           </button>
           <button
             onClick={() => {
-              console.log(info.row.original);
+              dispatch(deleteIncident({ id: info.row.original.id }));
+              setData(data.filter((item) => item.id !== info.row.original.id));
             }}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
@@ -196,7 +199,7 @@ function ReportTable(props: { tableData: any }) {
       ),
     }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...tableData]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const table = useReactTable({
     data,
@@ -301,15 +304,16 @@ function ReportTable(props: { tableData: any }) {
       </Card>
       {selectedRow && (
         <>
-          <ReportModal
-            isReportModalOpen={isReportModalOpen}
-            onAddTaskModalOpen={onAddTaskModalOpen}
-            onReportModalClose={onReportModalClose}
+          <IncidentModal
+            showSource={false}
+            isIncidentModalOpen={isIncidentModalOpen}
+            onIncidentModalClose={onIncidentModalClose}
+            onConvertTaskModalOpen={onConvertTaskModalOpen}
             incident={selectedRow}
           />
-          <AddTaskModal
-            isAddTaskModalOpen={isAddTaskModalOpen}
-            onAddTaskModalClose={onAddTaskModalClose}
+          <ConvertTaskModal
+            isConvertTaskModalOpen={isConvertTaskModalOpen}
+            onConvertTaskModalClose={onConvertTaskModalClose}
             incident={selectedRow}
           />
         </>

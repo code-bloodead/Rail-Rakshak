@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import Card from "@/components/card";
 import Pagination from "@/components/pagination/Pagination";
-import { FiEdit } from "react-icons/fi";
 import { FaRegEye } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
 import { MdOutlinePostAdd } from "react-icons/md";
+import { deleteIncident } from "@/app/features/IncidentSlice";
 
 import {
   createColumnHelper,
@@ -22,9 +22,10 @@ import { BsClockHistory } from "react-icons/bs";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { FiSearch } from "react-icons/fi";
 import { useDisclosure } from "@chakra-ui/hooks";
-import IncidentModal from "./IncidentModal";
 import { getDate, truncateString } from "@/constants/utils";
-import AddTaskModal from "./AddTaskModal";
+import IncidentModal from "@/components/modal/IncidentModal";
+import ConvertTaskModal from "@/components/modal/ConvertTaskModal";
+import { useAppDispatch } from "@/app/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -61,10 +62,10 @@ function IncidentTable(props: { tableData: any }) {
   const columnHelper = createColumnHelper<RowObj>();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
-  let defaultData = tableData;
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...tableData]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
+  const dispatch = useAppDispatch();
 
   const {
     isOpen: isIncidentModalOpen,
@@ -73,10 +74,11 @@ function IncidentTable(props: { tableData: any }) {
   } = useDisclosure();
 
   const {
-    isOpen: isAddTaskModalOpen,
-    onOpen: onAddTaskModalOpen,
-    onClose: onAddTaskModalClose,
+    isOpen: isConvertTaskModalOpen,
+    onOpen: onConvertTaskModalOpen,
+    onClose: onConvertTaskModalClose,
   } = useDisclosure();
+
   const handleView = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
     onIncidentModalOpen();
@@ -84,7 +86,12 @@ function IncidentTable(props: { tableData: any }) {
 
   const handleAddTask = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
-    onAddTaskModalOpen();
+    onConvertTaskModalOpen();
+  };
+
+  const handleDelete = (rowObj: RowObj) => {
+    dispatch(deleteIncident({ id: rowObj.id }));
+    setData(data.filter((item) => item.id !== rowObj.id));
   };
 
   const columns = [
@@ -170,9 +177,7 @@ function IncidentTable(props: { tableData: any }) {
       cell: (info: any) => (
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => {
-              handleAddTask(info.row.original);
-            }}
+            onClick={() => handleAddTask(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
           >
@@ -187,9 +192,7 @@ function IncidentTable(props: { tableData: any }) {
             <FaRegEye className="h-4 w-4" />
           </button>
           <button
-            onClick={() => {
-              console.log(info.row.original);
-            }}
+            onClick={() => handleDelete(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
           >
@@ -198,7 +201,7 @@ function IncidentTable(props: { tableData: any }) {
         </div>
       ),
     }),
-  ]; // eslint-disable-next-line
+  ];
 
   const table = useReactTable({
     data,
@@ -298,14 +301,15 @@ function IncidentTable(props: { tableData: any }) {
       {selectedRow && (
         <>
           <IncidentModal
+            showSource={false}
             isIncidentModalOpen={isIncidentModalOpen}
-            onAddTaskModalOpen={onAddTaskModalOpen}
+            onConvertTaskModalOpen={onConvertTaskModalOpen}
             onIncidentModalClose={onIncidentModalClose}
             incident={selectedRow}
           />
-          <AddTaskModal
-            isAddTaskModalOpen={isAddTaskModalOpen}
-            onAddTaskModalClose={onAddTaskModalClose}
+          <ConvertTaskModal
+            isConvertTaskModalOpen={isConvertTaskModalOpen}
+            onConvertTaskModalClose={onConvertTaskModalClose}
             incident={selectedRow}
           />
         </>

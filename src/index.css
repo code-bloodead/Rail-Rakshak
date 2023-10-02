@@ -60,9 +60,11 @@ input:checked.defaultCheckbox::before {
 
 .searchWrapper {
   border: none !important;
+  display: flex;
 }
 
 #search_input {
   padding-left: 1rem;
   padding-right: 0.5rem;
+  display: inline;
 }

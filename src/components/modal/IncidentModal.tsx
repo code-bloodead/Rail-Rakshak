@@ -5,15 +5,17 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/modal";
-import { Select, Option } from "@material-tailwind/react";
 import Card from "@/components/card";
 import { MdCheckCircle, MdOutlinePostAdd } from "react-icons/md";
 import { BsCardText, BsClockHistory } from "react-icons/bs";
 import { getDateTime } from "@/constants/utils";
-import { BiTimeFive, BiCategoryAlt } from "react-icons/bi";
+import { BiTimeFive, BiCategoryAlt, BiCctv } from "react-icons/bi";
 import { MdOutlineLocationOn } from "react-icons/md";
 import { IoImages } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
+import { LiaUserShieldSolid } from "react-icons/lia";
+import { useAppDispatch } from "@/app/store";
+import { deleteIncident } from "@/app/features/IncidentSlice";
 
 type Incident = {
   id: string;
@@ -29,28 +31,38 @@ type Incident = {
   actions: string | undefined;
 };
 
-interface ReportModalProps {
+interface IncidentModalProps {
   incident: Incident;
-  isReportModalOpen: boolean;
-  onReportModalClose: () => void;
-  onAddTaskModalOpen: () => void;
+  isIncidentModalOpen: boolean;
+  onIncidentModalClose: () => void;
+  onConvertTaskModalOpen: () => void;
+  showSource: boolean;
 }
 
-const ReportModal = ({
-  isReportModalOpen,
-  onReportModalClose,
-  onAddTaskModalOpen,
+const IncidentModal = ({
+  isIncidentModalOpen,
+  onIncidentModalClose,
+  onConvertTaskModalOpen,
+  showSource,
   incident,
-}: ReportModalProps) => {
+}: IncidentModalProps) => {
   const handleAddTask = (incident: Incident) => {
-    onReportModalClose();
-    onAddTaskModalOpen();
+    onIncidentModalClose();
+    onConvertTaskModalOpen();
   };
+  const dispatch = useAppDispatch();
+  const hasImage = incident?.image !== "";
+
+  const handleDelete = (incident: Incident) => {
+    dispatch(deleteIncident({ id: incident.id }));
+    onIncidentModalClose();
+  };
+
   return (
     <>
       <Modal
-        isOpen={isReportModalOpen}
-        onClose={onReportModalClose}
+        isOpen={isIncidentModalOpen}
+        onClose={onIncidentModalClose}
         size="xl"
         isCentered
         scrollBehavior="inside"
@@ -59,14 +71,28 @@ const ReportModal = ({
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[3vh] sm:top-[5vh]">
-          <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[3vh] md:top-[5vh]">
+          <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-navy-700  hover:text-navy-900 dark:text-gray-500 dark:hover:text-white" />
           <ModalBody>
-            <Card extra="px-[30px] pt-[35px] pb-[40px] w-[85vw] max-w-[950px] flex flex-col !z-[1004] md-max:h-[95vh] overflow-y-auto">
-              <h1 className="mb-4 text-2xl text-navy-700 dark:text-white font-bold">
+            <Card
+              extra={`px-[30px] pt-[35px] pb-[40px] ${
+                hasImage
+                  ? "w-[85vw] md-max:h-[95vh]"
+                  : "w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh]"
+              }  max-w-[950px] flex flex-col !z-[1004] overflow-y-auto`}
+            >
+              <h1
+                className={`mb-4 text-2xl text-navy-700 dark:text-white font-bold ${
+                  !hasImage && "text-center mb-6"
+                }`}
+              >
                 Incident {incident?.id}
               </h1>
-              <div className="my-2 grid grid-cols-1 md:grid-cols-4 sm:grid-cols-2 gap-4">
+              <div
+                className={`my-2 grid grid-cols-1 ${
+                  hasImage ? "md:grid-cols-4" : "md:grid-cols-2"
+                }  sm:grid-cols-2 gap-4`}
+              >
                 <div className="relative flex-col my-2 sm:my-0">
                   <div className="flex items-center ">
                     <label
@@ -86,7 +112,7 @@ const ReportModal = ({
                 </div>
                 <div className="relative flex-col my-2 sm:my-0">
                   <div className="flex items-center ml-2">
-                    <BiCategoryAlt fill="#1b254b" />
+                    <BiCategoryAlt className="text-navy-700 dark:text-white me-1" />
                     <label
                       htmlFor="category"
                       className={`text-navy-700 dark:text-white font-bold ml-1`}
@@ -104,7 +130,7 @@ const ReportModal = ({
                 </div>
                 <div className="relative flex-col my-2 md:my-0">
                   <div className="flex items-center ml-2">
-                    <MdOutlineLocationOn fill="#1b254b" />
+                    <MdOutlineLocationOn className="text-navy-700 dark:text-white me-1" />
                     <label
                       htmlFor="location"
                       className={`text-navy-700 dark:text-white font-bold ml-1`}
@@ -127,6 +153,7 @@ const ReportModal = ({
                   >
                     Status:
                   </label>
+
                   <div className="flex items-center">
                     <p className="relative mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3">
                       {incident?.status === "Pending" ? (
@@ -139,10 +166,14 @@ const ReportModal = ({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-row flex-wrap mt-3">
-                <div className="relative flex-col sm:basis-1/4">
+              <div
+                className={`grid grid-cols-1 sm:grid-cols-2 ${
+                  hasImage ? "md:grid-cols-4" : "md:grid-cols-2"
+                }   space-x-2 mt-3 mx-1 mr-5`}
+              >
+                <div className="relative flex-col col-span-2 sm:col-span-1 my-2 sm:my-0">
                   <div className="flex items-center ml-2">
-                    <BiTimeFive fill="#1b254b" />
+                    <BiTimeFive className="text-navy-700 dark:text-white me-1" />
                     <label
                       htmlFor="date-time"
                       className={`text-navy-700 dark:text-white font-bold ml-1`}
@@ -161,9 +192,43 @@ const ReportModal = ({
                     className=" relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3"
                   />
                 </div>
-                <div className="relative flex-col sm:basis-3/4">
-                  <div className="flex items-center ml-5">
-                    <BsCardText fill="#1b254b" />
+                {showSource && (
+                  <div className="relative flex-col cursor-default my-2 sm:my-0">
+                    <div className="flex items-center ml-2">
+                      <label
+                        htmlFor="source"
+                        className={`text-navy-700 dark:text-white font-bold ml-1`}
+                      >
+                        Source:
+                      </label>
+                    </div>
+                    <div
+                      id="source"
+                      className=" relative mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3"
+                    >
+                      {incident?.source === "CCTV" ? (
+                        <BiCctv className="h-5 w-5 text-navy-700 dark:text-white mr-2" />
+                      ) : incident?.source === "User Report" ? (
+                        <LiaUserShieldSolid className="h-5 w-5 text-navy-700 dark:text-white mr-2" />
+                      ) : (
+                        ""
+                      )}
+
+                      <p>
+                        {incident?.source ? incident?.source : "Not Available"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={`relative flex-col my-2 md:my-0 ${
+                    showSource ? "col-span-2" : "col-span-3"
+                  } `}
+                >
+                  <div
+                    className={`flex items-center ${hasImage && "sm:ml-5"} `}
+                  >
+                    <BsCardText className="text-navy-700 dark:text-white me-1" />
                     <label
                       htmlFor="description"
                       className={`text-navy-700 dark:text-white font-bold ml-1`}
@@ -173,38 +238,39 @@ const ReportModal = ({
                   </div>
                   <input
                     disabled={true}
-                    id="date-time"
+                    id="description"
                     value={incident?.description ? incident?.description : "-"}
-                    className=" relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] ml-3"
+                    className=" relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
                   />
                   <p id="description"></p>
                 </div>
               </div>
+              {hasImage && (
+                <div className="my-3 mt-4 flex-col">
+                  <div className="flex items-center ml-2">
+                    <IoImages className="text-navy-700 dark:text-white me-1" />
+                    <label
+                      htmlFor="image"
+                      className={`text-navy-700 dark:text-white font-bold ml-1`}
+                    >
+                      Images:
+                    </label>
+                  </div>
 
-              <div className="my-3 flex-col">
-                <div className="flex items-center">
-                  <IoImages fill="#1b254b" />
-                  <label
-                    htmlFor="image"
-                    className={`text-navy-700 dark:text-white font-bold ml-1`}
-                  >
-                    Images:
-                  </label>
+                  <img
+                    id="image"
+                    src={
+                      incident?.image === ""
+                        ? "https://static.toiimg.com/thumb/msid-65971726,imgsize-108452,width-400,resizemode-4/65971726.jpg"
+                        : incident?.image
+                    }
+                    alt="Evidence"
+                    className="mt-2 rounded-xl"
+                    width={250}
+                    height={250}
+                  />
                 </div>
-
-                <img
-                  id="image"
-                  src={
-                    incident?.image === ""
-                      ? "https://static.toiimg.com/thumb/msid-65971726,imgsize-108452,width-400,resizemode-4/65971726.jpg"
-                      : incident?.image
-                  }
-                  alt="Evidence"
-                  className="mt-2 rounded-xl"
-                  width={250}
-                  height={250}
-                />
-              </div>
+              )}
 
               <div className="mt-4 flex justify-center gap-4">
                 <button
@@ -212,10 +278,10 @@ const ReportModal = ({
                   className={` flex items-center justify-center rounded-lg bg-navy-50  font-medium text-brand-600 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10 p-3`}
                 >
-                  <MdOutlinePostAdd className="h-6 w-6 mr-2" /> Create Task
+                  <MdOutlinePostAdd className="h-5 w-5 mr-2" /> Create Task
                 </button>
                 <button
-                  onClick={() => console.log("Delete")}
+                  onClick={() => handleDelete(incident)}
                   className={` flex items-center justify-center rounded-lg bg-navy-50   font-medium text-brand-600 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10 p-3`}
                 >
@@ -230,4 +296,4 @@ const ReportModal = ({
   );
 };
 
-export default ReportModal;
+export default IncidentModal;

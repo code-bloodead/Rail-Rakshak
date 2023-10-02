@@ -43,17 +43,17 @@ type Incident = {
   actions: string | undefined;
 };
 
-interface AddTaskModalProps {
-  incident: Incident;
-  isAddTaskModalOpen: boolean;
-  onAddTaskModalClose: () => void;
+interface ConvertTaskModalProps {
+  incident: Incident | undefined;
+  isConvertTaskModalOpen: boolean;
+  onConvertTaskModalClose: () => void;
 }
 
-const AddTaskModal = ({
-  isAddTaskModalOpen,
-  onAddTaskModalClose,
+const ConvertTaskModal = ({
+  isConvertTaskModalOpen,
+  onConvertTaskModalClose,
   incident,
-}: AddTaskModalProps) => {
+}: ConvertTaskModalProps) => {
   const admin = useAppSelector(
     (state: { admin: { data: Admin } }) => state.admin.data
   );
@@ -62,8 +62,7 @@ const AddTaskModal = ({
   );
   const dispatch = useAppDispatch();
   const availableStaff = staff.filter((obj) => obj.status === "Available");
-  const defaultImageURL =
-    "https://static.toiimg.com/thumb/msid-65971726,imgsize-108452,width-400,resizemode-4/65971726.jpg";
+  const hasImage = incident?.image !== "";
   const [taskData, setTaskData] = useState({
     title: incident?.title || "-",
     description: incident
@@ -72,7 +71,7 @@ const AddTaskModal = ({
         }`
       : "No incident data available",
     assigned_to: [],
-    image: incident?.image || defaultImageURL,
+    image: incident?.image || "",
     deadline: "",
     assc_incident: incident?.id || "-",
     dept_name: localStorage.getItem("dept") || "-",
@@ -93,13 +92,14 @@ const AddTaskModal = ({
       station_name: taskData.station_name,
     };
     dispatch(addTask(formData));
+    onConvertTaskModalClose();
   };
 
   return (
     <>
       <Modal
-        isOpen={isAddTaskModalOpen}
-        onClose={onAddTaskModalClose}
+        isOpen={isConvertTaskModalOpen}
+        onClose={onConvertTaskModalClose}
         size="xl"
         isCentered
         scrollBehavior="inside"
@@ -111,132 +111,154 @@ const AddTaskModal = ({
         <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[2vh] sm:top-[3vh]">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
           <ModalBody>
-            <Card extra="px-[30px] pt-[35px] pb-[40px] w-[85vw] max-w-[950px] flex flex-col !z-[1004] md-max:h-[95vh] overflow-y-auto">
+            <Card
+              extra={`px-[30px] pt-[35px] pb-[40px] max-w-[950px] flex flex-col !z-[1004]  overflow-y-auto ${
+                hasImage
+                  ? "w-[85vw] md-max:h-[95vh]"
+                  : "w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh] sm:max-h-[90vh]"
+              }`}
+            >
               <h1 className="mb-4 text-2xl text-navy-700 dark:text-white font-bold">
                 Create Task
               </h1>
               {/*  Referenced Incident  */}
-              <div className="flex flex-col justify-center bg-lightPrimary rounded-lg px-4 mb-3">
-                <Accordion className="w-full" allowMultiple>
-                  <AccordionItem className="border-b border-gray-200 py-[17px] dark:!border-white/10">
-                    <h2>
-                      <AccordionButton className="flex justify-between">
-                        <span className="text-left font-bold text-navy-900 dark:text-white">
-                          Referenced Incident
-                        </span>
-                        <AccordionIcon className="text-left !text-navy-900 dark:!text-white" />
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel
-                      className="text-left text-medium mt-2 !text-navy-900 dark:!text-white"
-                      pb={4}
-                    >
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-4 sm:grid-cols-2 gap-4">
-                        <div className="relative flex-col my-2 sm:my-0">
-                          <div className="flex items-center ">
-                            <label
-                              htmlFor="title"
-                              className={`text-navy-700 dark:text-white font-bold ml-2`}
-                            >
-                              Incident ID:
-                            </label>
-                          </div>
+              {incident && (
+                <div className="flex flex-col justify-center bg-lightPrimary rounded-lg px-4 mb-3">
+                  <Accordion className="w-full" allowMultiple>
+                    <AccordionItem className="border-b border-gray-200 py-[17px] dark:!border-white/10">
+                      <h2>
+                        <AccordionButton className="flex justify-between">
+                          <span className="text-left font-bold text-navy-900 dark:text-white">
+                            Referenced Incident
+                          </span>
+                          <AccordionIcon className="text-left !text-navy-900 dark:!text-white" />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel
+                        className="text-left text-medium mt-2 !text-navy-900 dark:!text-white"
+                        pb={4}
+                      >
+                        <div
+                          className={`mt-4 grid grid-cols-1 ${
+                            hasImage ? "md:grid-cols-4" : "md:grid-cols-2"
+                          } sm:grid-cols-2 gap-4`}
+                        >
+                          <div className="relative flex-col my-2 sm:my-0">
+                            <div className="flex items-center ">
+                              <label
+                                htmlFor="title"
+                                className={`text-navy-700 dark:text-white font-bold ml-2`}
+                              >
+                                Incident ID:
+                              </label>
+                            </div>
 
-                          <input
-                            disabled={true}
-                            id="title"
-                            value={incident?.id ? incident?.id : "-"}
-                            className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
-                          />
-                        </div>
-                        <div className="relative flex-col my-2 sm:my-0">
-                          <div className="flex items-center ">
-                            <label
-                              htmlFor="title"
-                              className={`text-navy-700 dark:text-white font-bold ml-2`}
-                            >
-                              Incident Title:
-                            </label>
+                            <input
+                              disabled={true}
+                              id="title"
+                              value={incident?.id ? incident?.id : "-"}
+                              className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
+                            />
                           </div>
+                          <div className="relative flex-col my-2 sm:my-0">
+                            <div className="flex items-center ">
+                              <label
+                                htmlFor="title"
+                                className={`text-navy-700 dark:text-white font-bold ml-2`}
+                              >
+                                Incident Title:
+                              </label>
+                            </div>
 
-                          <input
-                            disabled={true}
-                            id="title"
-                            value={incident?.title ? incident?.title : "-"}
-                            className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
-                          />
-                        </div>
-                        <div className="relative flex-col my-2 md:my-0">
-                          <div className="flex items-center ml-2">
-                            <MdOutlineLocationOn fill="#1b254b" />
-                            <label
-                              htmlFor="location"
-                              className={`text-navy-700 dark:text-white font-bold ml-1`}
-                            >
-                              Location:
-                            </label>
+                            <input
+                              disabled={true}
+                              id="title"
+                              value={incident?.title ? incident?.title : "-"}
+                              className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
+                            />
                           </div>
+                          <div className="relative flex-col my-2 md:my-0">
+                            <div className="flex items-center ml-2">
+                              <MdOutlineLocationOn fill="#1b254b" />
+                              <label
+                                htmlFor="location"
+                                className={`text-navy-700 dark:text-white font-bold ml-1`}
+                              >
+                                Location:
+                              </label>
+                            </div>
 
-                          <input
-                            disabled={true}
-                            id="location"
-                            value={
-                              incident?.location ? incident?.location : "-"
-                            }
-                            className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
-                          />
-                        </div>
-                        <div className="relative flex-col sm:basis-1/4">
-                          <div className="flex items-center ml-2">
-                            <BiTimeFive fill="#1b254b" />
-                            <label
-                              htmlFor="date-time"
-                              className={`text-navy-700 dark:text-white font-bold ml-1`}
-                            >
-                              Date & Time:
-                            </label>
+                            <input
+                              disabled={true}
+                              id="location"
+                              value={
+                                incident?.location ? incident?.location : "-"
+                              }
+                              className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
+                            />
                           </div>
-                          <input
-                            disabled={true}
-                            id="date-time"
-                            value={
-                              incident?.created_at
-                                ? getDateTime(incident?.created_at.toString())
-                                : "-"
-                            }
-                            className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3"
-                          />
+                          <div className="relative flex-col sm:basis-1/4">
+                            <div className="flex items-center ml-2">
+                              <BiTimeFive fill="#1b254b" />
+                              <label
+                                htmlFor="date-time"
+                                className={`text-navy-700 dark:text-white font-bold ml-1`}
+                              >
+                                Date & Time:
+                              </label>
+                            </div>
+                            <input
+                              disabled={true}
+                              id="date-time"
+                              value={
+                                incident?.created_at
+                                  ? getDateTime(incident?.created_at.toString())
+                                  : "-"
+                              }
+                              className="cursor-not-allowed relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-white dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)] mr-3"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </AccordionPanel>
-                  </AccordionItem>{" "}
-                </Accordion>
-              </div>
-              <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex-col basis-2/5 mr-2">
-                  <div className="flex items-center">
-                    <IoImages fill="#1b254b" />
-                    <label
-                      htmlFor="image"
-                      className={`text-navy-700 dark:text-white font-bold ml-1`}
-                    >
-                      Image:
-                    </label>
-                  </div>
-
-                  <img
-                    id="image"
-                    src={
-                      incident?.image === ""
-                        ? "https://static.toiimg.com/thumb/msid-65971726,imgsize-108452,width-400,resizemode-4/65971726.jpg"
-                        : incident?.image
-                    }
-                    alt="Evidence"
-                    className="mt-2 rounded-xl w-full h-60"
-                  />
+                      </AccordionPanel>
+                    </AccordionItem>{" "}
+                  </Accordion>
                 </div>
-                <div className="basis-3/5 grid grid-cols-2 gap-2">
-                  <div className="relative  flex-col my-1">
+              )}
+
+              <div className="grid grid-cols-5 gap-2">
+                {hasImage && (
+                  <div
+                    className={`flex-col col-span-5 md:col-span-2 mr-2 order-2 md:order-none`}
+                  >
+                    <div className="flex items-center">
+                      <IoImages fill="#1b254b" />
+                      <label
+                        htmlFor="image"
+                        className={`text-navy-700 dark:text-white font-bold ml-1`}
+                      >
+                        Image:
+                      </label>
+                    </div>
+
+                    <img
+                      id="image"
+                      src={
+                        incident?.image === ""
+                          ? "https://static.toiimg.com/thumb/msid-65971726,imgsize-108452,width-400,resizemode-4/65971726.jpg"
+                          : incident?.image
+                      }
+                      alt="Evidence"
+                      className="mt-2 rounded-xl md:w-full w-60 h-60"
+                    />
+                  </div>
+                )}
+
+                <div
+                  className={`${
+                    hasImage ? "col-span-3" : "col-span-5"
+                  }  grid grid-cols-2 gap-2`}
+                >
+                  <div className="relative  flex-col my-2 col-span-2 md:col-span-1">
                     <div className="flex items-center ">
                       <label
                         htmlFor="title"
@@ -258,7 +280,7 @@ const AddTaskModal = ({
                       className=" relative mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none !border-none !bg-gray-50 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
                     />
                   </div>
-                  <div className="relative flex-col my-1">
+                  <div className="relative flex-col my-2 col-span-2 md:col-span-1">
                     <div className="flex items-center ml-2">
                       <BsCalendar2Plus fill="#1b254b" />
                       <label
@@ -273,6 +295,7 @@ const AddTaskModal = ({
                       type="date"
                       id="deadline"
                       value={taskData.deadline}
+                      min={new Date().toISOString().split("T")[0]}
                       onChange={(e) =>
                         setTaskData({
                           ...taskData,
@@ -312,9 +335,11 @@ const AddTaskModal = ({
                             .map((obj: { id: any }) => obj.id),
                         });
                       }}
-                      options={availableStaff.map((obj) => {
-                        return { key: obj.staff_name, id: obj.id };
-                      })}
+                      options={availableStaff.map(
+                        (obj: { staff_name: string; id: string }) => {
+                          return { key: obj.staff_name, id: obj.id };
+                        }
+                      )}
                       selectedValues={selectedStaff}
                       hidePlaceholder={true}
                       placeholder="Select Staff"
@@ -378,4 +403,4 @@ const AddTaskModal = ({
   );
 };
 
-export default AddTaskModal;
+export default ConvertTaskModal;

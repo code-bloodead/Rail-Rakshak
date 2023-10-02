@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "@/components/card";
 import { ImEnlarge } from "react-icons/im";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -20,8 +20,10 @@ import { FaRegEye, FaTrash, FaUserClock } from "react-icons/fa";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { getDate } from "@/constants/utils";
 import { useAppSelector } from "@/app/store";
-import ViewTaskModal from "./ViewTaskModal";
+import ViewTaskModal from "@/components/modal/ViewTaskModal";
 import { useDisclosure } from "@chakra-ui/hooks";
+import NewTaskModal from "@/components/modal/NewTaskModal";
+import { TbEdit } from "react-icons/tb";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -61,8 +63,9 @@ function TaskTable(props: { tableData: any }) {
   const navigate: NavigateFunction = useNavigate();
   const { tableData } = props;
   const [sorting, setSorting] = useState<SortingState>([]);
-  let defaultData = tableData;
+  const [data, setData] = useState(() => [...tableData]);
   const [selectedRow, setSelectedRow] = useState<RowObj | null>(null);
+  const [editTask, setEditTask] = useState<boolean>(false);
 
   const {
     isOpen: isViewTaskModalOpen,
@@ -70,9 +73,26 @@ function TaskTable(props: { tableData: any }) {
     onClose: onViewTaskModalClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isNewTaskModalOpen,
+    onOpen: onNewTaskModalOpen,
+    onClose: onNewTaskModalClose,
+  } = useDisclosure();
+
   const handleView = (rowObj: RowObj) => {
     setSelectedRow(rowObj);
+    setEditTask(false);
     onViewTaskModalOpen();
+  };
+
+  const handleEdit = (rowObj: RowObj) => {
+    setSelectedRow(rowObj);
+    setEditTask(true);
+    onViewTaskModalOpen();
+  };
+
+  const handleNewTask = () => {
+    onNewTaskModalOpen();
   };
 
   const columns = [
@@ -160,7 +180,7 @@ function TaskTable(props: { tableData: any }) {
         </p>
       ),
       cell: (info: any) => (
-        <div className="flex items-center ml-1">
+        <div className="flex items-center ml-1 gap-2">
           <button
             onClick={() => handleView(info.row.original)}
             className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
@@ -168,11 +188,22 @@ function TaskTable(props: { tableData: any }) {
           >
             <FaRegEye className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => handleEdit(info.row.original)}
+            className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+          >
+            <TbEdit className="h-4 w-4" />
+          </button>
         </div>
       ),
     }),
   ]; // eslint-disable-next-line
-  const [data, setData] = useState(() => [...defaultData]);
+
+  useEffect(() => {
+    setData(tableData);
+  }, [tableData]);
+
   const table = useReactTable({
     data,
     columns,
@@ -197,9 +228,7 @@ function TaskTable(props: { tableData: any }) {
 
           <div className="flex items-center justify-between">
             <button
-              onClick={() => {
-                navigate("/dept-admin/tasks");
-              }}
+              onClick={() => handleNewTask()}
               className={` linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem] text-xl font-bold text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
             >
@@ -285,8 +314,13 @@ function TaskTable(props: { tableData: any }) {
           onViewTaskModalClose={onViewTaskModalClose}
           isViewTaskModalOpen={isViewTaskModalOpen}
           task={selectedRow}
+          edit={editTask}
         />
       )}
+      <NewTaskModal
+        onNewTaskModalClose={onNewTaskModalClose}
+        isNewTaskModalOpen={isNewTaskModalOpen}
+      />
     </>
   );
 }

@@ -36,8 +36,23 @@ export const fetchIncidents = createAsyncThunk(
           import.meta.env.VITE_BACKEND_URL
         }/incidents/get_incidents_by_dept_and_station?dept_name=${deptName}&station_name=${stationName}`
       );
-      console.log(res.data);
       return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const deleteIncident = createAsyncThunk(
+  "incident/delete",
+  async (payload: { id: string }, thunkAPI) => {
+    try {
+      const { id } = payload;
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/incidents/delete_incident?id=${id}`
+      );
+      return id;
     } catch (error) {
       console.log(error);
       throw error;
@@ -69,6 +84,21 @@ export const IncidentSlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchIncidents.rejected, (state, action) => {
+      state.error = action.error.message || "An error occurred";
+      state.loading = false;
+    });
+    builder.addCase(deleteIncident.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteIncident.fulfilled, (state, action) => {
+      state.data = state.data.filter(
+        (incident) => incident.id !== action.payload
+      );
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(deleteIncident.rejected, (state, action) => {
       state.error = action.error.message || "An error occurred";
       state.loading = false;
     });
