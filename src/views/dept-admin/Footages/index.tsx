@@ -4,7 +4,8 @@ import useCrowdCounter from "./Stream/useCrowdCounter";
 import ReactApexChart from "react-apexcharts";
 import { useState } from "react";
 import { CrowdData, getAlert } from "./crowdAnalyser";
-import CreateTaskButton from "./CreateTaskButton";
+import AssignPersonnelModal from "./AssignPersonnelModal";
+import { Button, Select } from "@chakra-ui/react";
 
 enum Tab {
   Footage = "Footage",
@@ -13,6 +14,9 @@ enum Tab {
 
 const Footages = () => {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Footage);
+  const [taskTargetPlatform, setTaskTargetPlatform] = useState<string | null>(
+    null
+  );
 
   const streams = [
     {
@@ -129,6 +133,29 @@ const Footages = () => {
                 <h1 className="ml-3 mt-3 text-xl font-bold text-navy-700 dark:text-white">
                   {stream.title}
                 </h1>
+                <div className="grow"></div>
+                <div className="flex justify-end mx-2 my-2">
+                  <label htmlFor="underline_select" className="sr-only">
+                    Select CCTV
+                  </label>
+                  <Select
+                    id="underline_select"
+                    defaultValue="CCTV-1"
+                    placeholder="Select option"
+                    width="full"
+                    size="sm"
+                    borderColor="gray.300"
+                    _hover={{ borderColor: "gray.400" }}
+                    _focus={{ borderColor: "gray.200" }}
+                    color="gray.900"
+                    bg="transparent"
+                  >
+                    <option value="CCTV-1">CCTV-1</option>
+                    <option value="CCTV-2">CCTV-2</option>
+                    <option value="CCTV-3">CCTV-3</option>
+                    <option value="CCTV-4">CCTV-4</option>
+                  </Select>
+                </div>
               </div>
               <div className="p-2">
                 <span className="mx-2">
@@ -139,14 +166,30 @@ const Footages = () => {
                     <span className="mr-2 rounded px-2.5 py-0.5 text-xs font-medium bg-red-100 border border-red-400 text-red-700">
                       Heavily crowded{" "}
                     </span>
-                    <CreateTaskButton />
+                    <Button
+                      onClick={() =>
+                        setTaskTargetPlatform(platformWiseCrowd[idx].name)
+                      }
+                      colorScheme="blue"
+                      variant="solid"
+                    >
+                      Assign personnel
+                    </Button>
                   </>
                 ) : platformWiseCrowd[idx].livePeopleCount > 17 ? (
                   <>
                     <span className="mr-2 rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                       Overcrowded{" "}
                     </span>
-                    <CreateTaskButton />
+                    <Button
+                      onClick={() =>
+                        setTaskTargetPlatform(platformWiseCrowd[idx].name)
+                      }
+                      colorScheme="blue"
+                      variant="solid"
+                    >
+                      Assign personnel
+                    </Button>
                   </>
                 ) : (
                   <span className="mr-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
@@ -259,6 +302,10 @@ const Footages = () => {
             </div>
           </Card>
         </div>
+        <AssignPersonnelModal
+          targetPlatform={taskTargetPlatform}
+          onClose={() => setTaskTargetPlatform(null)}
+        />
       </>
     </div>
   );

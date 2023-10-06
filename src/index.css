@@ -13,6 +13,10 @@
   }
 }
 
+input:focus {
+  outline: none !important;
+}
+
 input.defaultCheckbox::before {
   content: url(../src/assets/svg/checked.svg);
   color: white;
