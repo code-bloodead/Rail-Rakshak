@@ -6,20 +6,17 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/modal";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import Card from "@/components/card";
 import { BsCardText } from "react-icons/bs";
-import { MdOutlineLocationOn } from "react-icons/md";
-import { BiTimeFive } from "react-icons/bi";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { BsCalendar2Plus } from "react-icons/bs";
-import { getDateTime } from "@/constants/utils";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { Admin } from "@/app/features/AdminSlice";
 import { Staff } from "@/app/features/StaffSlice";
 import Multiselect from "multiselect-react-dropdown";
-import { IoImages, IoClose } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { FiSave } from "react-icons/fi";
 import { addTask } from "@/app/features/TaskSlice";
 import Upload from "../upload/Upload";
@@ -41,7 +38,7 @@ const NewTaskModal = ({
   const staff = useAppSelector(
     (state: { staff: { data: Staff[] } }) => state.staff.data
   );
-  const [image, setImage] = useState<File | null>(null);
+  const [, setImage] = useState<File | null>(null);
   const dispatch = useAppDispatch();
   const availableStaff = staff.filter((obj) => obj.status === "Available");
   const [taskData, setTaskData] = useState({
@@ -54,6 +51,13 @@ const NewTaskModal = ({
     dept_name: localStorage.getItem("dept") || "-",
     station_name: admin?.station_name || "-",
   });
+  useEffect(() => {
+    setTaskData((prev) => ({
+      ...prev,
+      description: optionalDescription || "",
+    }));
+  }, [optionalDescription]);
+
   const [selectedStaff, setSelectedStaff] = useState([]);
   const multiselectRef = useRef(null);
 
@@ -173,7 +177,7 @@ const NewTaskModal = ({
                           ...taskData,
                           assigned_to: multiselectRef?.current
                             ?.getSelectedItems()
-                            .map((obj: { id: any }) => obj.id),
+                            .map((obj: { id: string | number }) => obj.id),
                         });
                       }}
                       options={availableStaff.map((obj) => {
