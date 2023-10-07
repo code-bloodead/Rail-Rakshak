@@ -116,7 +116,7 @@ function StaffTable(props: { tableData: any }) {
 
         <button
           onClick={() => {
-            navigate("/dept-admin/employees");
+            navigate("/dept-admin/staff");
           }}
           className={`linear flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
            hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
