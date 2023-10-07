@@ -21,13 +21,15 @@ const Footages = () => {
   const streams = [
     {
       title: "Platform no. 1",
-      streamUrl: "http://localhost:8888/mystream/index.m3u8",
+      // streamUrl: "http://localhost:8888/mystream/index.m3u8",  // Local stream
+      streamUrl: "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696664485/samples/sample-video.mp4",
       socketUrl: "ws://localhost:5005/ws",
     },
     {
       title: "Platform no. 2",
-      streamUrl: "http://localhost:8888/mystream/index.m3u8",
-      socketUrl: "ws://localhost:5005/ws",
+      // streamUrl: "http://20.193.136.79/mystream/index.m3u8", // Azure URL
+      streamUrl: "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696665710/samples/FOOTAGEtrasj_fight.mp4",
+      socketUrl: "ws://localhost:5006/ws",
     },
     // {
     //   title: "Platform no. 3",
@@ -91,6 +93,9 @@ const Footages = () => {
     ),
   }));
 
+  console.log(platformWiseCrowd[0].livePeopleCount);
+  console.log(platformWiseCrowd[1].livePeopleCount);
+  
   const platformWiseSeries = platformWiseCrowd.map((platformData) => ({
     name: platformData.name,
     data: platformData.peopleCountHistory,
