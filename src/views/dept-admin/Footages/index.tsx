@@ -4,7 +4,6 @@ import useCrowdCounter from "./Stream/useCrowdCounter";
 import ReactApexChart from "react-apexcharts";
 import { useState } from "react";
 import { CrowdData, getAlert } from "./crowdAnalyser";
-import { Select } from "@chakra-ui/react";
 import { MdOutlinePostAdd } from "react-icons/md";
 import NewTaskModal from "@/components/modal/NewTaskModal";
 import { useDisclosure } from "@chakra-ui/hooks";
@@ -153,23 +152,32 @@ const Footages = () => {
                   <label htmlFor="underline_select" className="sr-only">
                     Select CCTV
                   </label>
-                  <Select
+                  <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    {/* <Select label="Select Version">
+        <Option>Material Tailwind HTML</Option>
+        <Option>Material Tailwind React</Option>
+        <Option>Material Tailwind Vue</Option>
+        <Option>Material Tailwind Angular</Option>
+        <Option>Material Tailwind Svelte</Option>
+      </Select> */}
+                    {/* <Select
                     id="underline_select"
                     defaultValue="CCTV-1"
-                    placeholder="Select option"
-                    width="full"
-                    size="sm"
-                    borderColor="gray.300"
-                    _hover={{ borderColor: "gray.400" }}
-                    _focus={{ borderColor: "gray.200" }}
-                    color="gray.900"
-                    bg="transparent"
-                  >
+                    placeholder="Select CCTV"
+                    // width="full"
+                    // size="sm"
+                    // borderColor="gray.300"
+                    // _hover={{ borderColor: "gray.400" }}
+                    // _focus={{ borderColor: "gray.200" }}
+                    // color="gray.900"
+                    // bg="transparent"
+                  > */}
                     <option value="CCTV-1">CCTV-1</option>
                     <option value="CCTV-2">CCTV-2</option>
                     <option value="CCTV-3">CCTV-3</option>
                     <option value="CCTV-4">CCTV-4</option>
-                  </Select>
+                    {/* </Select> */}
+                  </select>
                 </div>
               </div>
               <div className="p-2 flex flex-row items-center justify-between">
