@@ -6,6 +6,9 @@ import { useState } from "react";
 import { CrowdData, getAlert } from "./crowdAnalyser";
 import AssignPersonnelModal from "./AssignPersonnelModal";
 import { Button, Select } from "@chakra-ui/react";
+import { MdOutlinePostAdd } from "react-icons/md";
+import NewTaskModal from "@/components/modal/NewTaskModal";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 enum Tab {
   Footage = "Footage",
@@ -22,13 +25,15 @@ const Footages = () => {
     {
       title: "Platform no. 1",
       // streamUrl: "http://localhost:8888/mystream/index.m3u8",  // Local stream
-      streamUrl: "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696664485/samples/sample-video.mp4",
+      streamUrl:
+        "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696664485/samples/sample-video.mp4",
       socketUrl: "ws://localhost:5005/ws",
     },
     {
       title: "Platform no. 2",
       // streamUrl: "http://20.193.136.79/mystream/index.m3u8", // Azure URL
-      streamUrl: "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696665710/samples/FOOTAGEtrasj_fight.mp4",
+      streamUrl:
+        "https://res.cloudinary.com/dp0ayty6p/video/upload/v1696665710/samples/FOOTAGEtrasj_fight.mp4",
       socketUrl: "ws://localhost:5006/ws",
     },
     // {
@@ -95,13 +100,19 @@ const Footages = () => {
 
   console.log(platformWiseCrowd[0].livePeopleCount);
   console.log(platformWiseCrowd[1].livePeopleCount);
-  
+
   const platformWiseSeries = platformWiseCrowd.map((platformData) => ({
     name: platformData.name,
     data: platformData.peopleCountHistory,
   }));
   const liveSeries = combinedData.map((data) => data.live);
   const historySeries = combinedData.map((data) => data.history);
+
+  const {
+    isOpen: isNewTaskModalOpen,
+    onOpen: onNewTaskModalOpen,
+    onClose: onNewTaskModalClose,
+  } = useDisclosure();
 
   return (
     <div>
@@ -139,7 +150,7 @@ const Footages = () => {
                   {stream.title}
                 </h1>
                 <div className="grow"></div>
-                <div className="flex justify-end mx-2 my-2">
+                <div className="flex justify-end mx-2 my-2 mt-4 me-4">
                   <label htmlFor="underline_select" className="sr-only">
                     Select CCTV
                   </label>
@@ -162,47 +173,36 @@ const Footages = () => {
                   </Select>
                 </div>
               </div>
-              <div className="p-2">
+              <div className="p-2 flex flex-row items-center justify-between">
                 <span className="mx-2">
                   Live Person count: {platformWiseCrowd[idx].livePeopleCount}
                 </span>
                 {platformWiseCrowd[idx].livePeopleCount > 20 ? (
-                  <>
-                    <span className="mr-2 rounded px-2.5 py-0.5 text-xs font-medium bg-red-100 border border-red-400 text-red-700">
-                      Heavily crowded{" "}
-                    </span>
-                    <Button
-                      onClick={() =>
-                        setTaskTargetPlatform(platformWiseCrowd[idx].name)
-                      }
-                      colorScheme="blue"
-                      variant="solid"
-                    >
-                      Assign personnel
-                    </Button>
-                  </>
+                  <span className="mr-2 rounded px-2.5 py-0.5 text-xs font-medium bg-red-100 border border-red-400 text-red-700">
+                    Heavily crowded{" "}
+                  </span>
                 ) : platformWiseCrowd[idx].livePeopleCount > 17 ? (
-                  <>
-                    <span className="mr-2 rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                      Overcrowded{" "}
-                    </span>
-                    <Button
-                      onClick={() =>
-                        setTaskTargetPlatform(platformWiseCrowd[idx].name)
-                      }
-                      colorScheme="blue"
-                      variant="solid"
-                    >
-                      Assign personnel
-                    </Button>
-                  </>
+                  <span className="mr-2 rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                    Overcrowded{" "}
+                  </span>
                 ) : (
                   <span className="mr-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
                     Average crowd
                   </span>
                 )}
+                <button
+                  onClick={() => {
+                    setTaskTargetPlatform(platformWiseCrowd[idx].name);
+                    console.log(platformWiseCrowd[idx].name);
+                    onNewTaskModalOpen();
+                  }}
+                  className={` flex items-center justify-center rounded-lg bg-lightPrimary p-[0.4rem]  font-medium text-brand-500 transition duration-200 hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10 ml-auto me-2 text-sm`}
+                >
+                  <span> Create Task </span>
+                  <MdOutlinePostAdd className="ml-1 h-4 w-4" />
+                </button>
               </div>
-              <div>
+              <div className=" p-2 mt-1">
                 <VideoPlayer url={stream.streamUrl} />
               </div>
               {/* <CrowdAlert alertLevel={platformWiseCrowd[idx].alert} /> */}
@@ -307,9 +307,14 @@ const Footages = () => {
             </div>
           </Card>
         </div>
-        <AssignPersonnelModal
+        {/* <AssignPersonnelModal
           targetPlatform={taskTargetPlatform}
           onClose={() => setTaskTargetPlatform(null)}
+        /> */}
+        <NewTaskModal
+          optionalDescription={`Near ${taskTargetPlatform}`}
+          onNewTaskModalClose={onNewTaskModalClose}
+          isNewTaskModalOpen={isNewTaskModalOpen}
         />
       </>
     </div>

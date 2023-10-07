@@ -27,11 +27,13 @@ import Upload from "../upload/Upload";
 interface NewTaskModalProps {
   isNewTaskModalOpen: boolean;
   onNewTaskModalClose: () => void;
+  optionalDescription?: string;
 }
 
 const NewTaskModal = ({
   isNewTaskModalOpen,
   onNewTaskModalClose,
+  optionalDescription,
 }: NewTaskModalProps) => {
   const admin = useAppSelector(
     (state: { admin: { data: Admin } }) => state.admin.data
@@ -44,7 +46,7 @@ const NewTaskModal = ({
   const availableStaff = staff.filter((obj) => obj.status === "Available");
   const [taskData, setTaskData] = useState({
     title: "",
-    description: "",
+    description: optionalDescription || "",
     assigned_to: [],
     image: "",
     deadline: "",

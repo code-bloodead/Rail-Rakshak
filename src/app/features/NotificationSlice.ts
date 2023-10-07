@@ -1,6 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { identity } from "lodash";
 
 export interface Notification {
   id: string;
@@ -23,6 +22,22 @@ const initialState: NotificationState = {
   loading: false,
   error: null,
 };
+
+export const createNotifications = createAsyncThunk(
+  "notification/create",
+  async (payload: Notification, thunkAPI) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/notifications/create_notification`,
+        payload
+      );
+      return res.data.SUCCESS;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
 
 export const fetchNotifications = createAsyncThunk(
   "notification/fetch",
@@ -138,6 +153,22 @@ export const NotificationSlice = createSlice({
       }
     );
     builder.addCase(readAllNotifications.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || null;
+    });
+    builder.addCase(createNotifications.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      createNotifications.fulfilled,
+      (state, action: PayloadAction<Notification>) => {
+        state.loading = false;
+        state.data = [...state.data, action.payload];
+        state.error = null;
+      }
+    );
+    builder.addCase(createNotifications.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || null;
     });

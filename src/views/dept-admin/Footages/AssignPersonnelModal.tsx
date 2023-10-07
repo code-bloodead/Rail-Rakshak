@@ -18,16 +18,22 @@ interface AssignPersonnelModalProps {
 
 const AssignPersonnelModal = (props: AssignPersonnelModalProps) => {
   const [personnelName, setPersonnelName] = useState("Staff2");
-  const [description, setDescription] = useState("Handle crowd on Platform no. 1");
+  const [description, setDescription] = useState(
+    "Handle crowd on Platform no. 1"
+  );
   const [isLoading, setIsLoading] = useState(false);
   const platformValue = props.targetPlatform || "";
   const toast = useToast();
 
-  const handlePersonnelNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePersonnelNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setPersonnelName(event.target.value);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setDescription(event.target.value);
   };
 
@@ -59,7 +65,10 @@ const AssignPersonnelModal = (props: AssignPersonnelModalProps) => {
       isCentered
       scrollBehavior="inside"
     >
-      <ModalOverlay className="bg-[#000000A0] !z-[1001]]" backdropFilter="blur(10px)" />
+      <ModalOverlay
+        className="bg-[#000000A0] !z-[1001]"
+        backdropFilter="blur(10px)"
+      />
       <ModalContent className="rounded-lg !z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[2vh] sm:top-[3vh]">
         <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
         <ModalBody className="bg-white p-4 border rounded-lg">

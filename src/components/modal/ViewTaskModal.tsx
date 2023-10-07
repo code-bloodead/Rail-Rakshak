@@ -302,7 +302,6 @@ const ViewTaskModal = ({
                   </Accordion>
                 </div>
               )}
-              {/* Referenced Incident */}
 
               {/* Task Detail */}
 
