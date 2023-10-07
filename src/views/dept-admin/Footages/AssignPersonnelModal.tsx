@@ -17,8 +17,8 @@ interface AssignPersonnelModalProps {
 }
 
 const AssignPersonnelModal = (props: AssignPersonnelModalProps) => {
-  const [personnelName, setPersonnelName] = useState("");
-  const [description, setDescription] = useState("Handle crowd");
+  const [personnelName, setPersonnelName] = useState("Staff2");
+  const [description, setDescription] = useState("Handle crowd on Platform no. 1");
   const [isLoading, setIsLoading] = useState(false);
   const platformValue = props.targetPlatform || "";
   const toast = useToast();

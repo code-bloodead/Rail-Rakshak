@@ -29,7 +29,7 @@ const Sidebar = (props: {
         className={`mx-[56px] mt-[50px] flex flex-col items-center justify-center`}
       >
         <div className="my-2 ml-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
-          Rail Rakshak
+          Rail रक्षक
         </div>
         <div className="mt-5 text-base text-navy-700 dark:text-white">
           ({admin?.station_name})
