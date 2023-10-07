@@ -71,15 +71,15 @@ const IncidentModal = ({
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[3vh] md:top-[5vh]">
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%]">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-navy-700  hover:text-navy-900 dark:text-gray-500 dark:hover:text-white" />
-          <ModalBody>
+          <ModalBody className=" overflow-x-hidden">
             <Card
               extra={`px-[30px] pt-[35px] pb-[40px] ${
                 hasImage
                   ? "w-[85vw] md-max:h-[95vh]"
                   : "w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh]"
-              }  max-w-[950px] flex flex-col !z-[1004] overflow-y-auto`}
+              }  max-w-[950px] flex flex-col !z-[1004] overflow-y-auto overflow-x-hidden`}
             >
               <h1
                 className={`mb-4 text-2xl text-navy-700 dark:text-white font-bold ${

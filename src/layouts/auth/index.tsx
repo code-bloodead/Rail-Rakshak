@@ -26,7 +26,7 @@ export default function Auth() {
             <img src={logo} width={65} height={65} alt="Logo" />
             <span className="text-3xl font-bold dark:text-white">
               {" "}
-              Rail Rakshak
+              Rail रक्षक
             </span>
           </div>
           <Routes>

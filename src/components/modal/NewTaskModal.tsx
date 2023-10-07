@@ -83,11 +83,11 @@ const NewTaskModal = ({
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[2vh] sm:top-[3vh]">
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] ">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900 " />
           <ModalBody>
             <Card
-              extra={`px-[30px] pt-[35px] pb-[40px] max-w-[950px] flex flex-col !z-[1004]  overflow-y-auto md:overflow-y-hidden w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh] sm:max-h-[90vh]
+              extra={`px-[30px] pt-[35px] pb-[40px] max-w-[950px] flex flex-col !z-[1004]  overflow-y-auto overflow-x-hidden md:overflow-y-hidden w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh] sm:max-h-[90vh]
               `}
             >
               <h1 className="mb-4 text-2xl text-navy-700 dark:text-white font-bold">

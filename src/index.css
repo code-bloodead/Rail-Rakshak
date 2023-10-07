@@ -72,3 +72,8 @@ input:checked.defaultCheckbox::before {
   padding-right: 0.5rem;
   display: inline;
 }
+
+.css-79z5gx {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}

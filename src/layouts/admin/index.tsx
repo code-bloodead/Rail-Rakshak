@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/app/store";
 import { fetchStaff } from "@/app/features/StaffSlice";
 import { fetchIncidents } from "@/app/features/IncidentSlice";
 import { fetchTasks } from "@/app/features/TaskSlice";
+import { fetchNotifications } from "@/app/features/NotificationSlice";
 
 export default function Admin(props: { [x: string]: any }) {
   const { ...rest } = props;
@@ -35,23 +36,41 @@ export default function Admin(props: { [x: string]: any }) {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!admin || admin.dept_name === "" || admin.station_name === "") {
-      fetchAdmin(localStorage.getItem("id") as string);
-      console.log("fetching admin");
-      return;
-    }
-    dispatch(
-      fetchIncidents({
-        deptName: admin.dept_name,
-        stationName: admin.station_name,
-      })
-    );
-    dispatch(
-      fetchStaff({ deptName: admin.dept_name, stationName: admin.station_name })
-    );
-    dispatch(
-      fetchTasks({ deptName: admin.dept_name, stationName: admin.station_name })
-    );
+    const fetchData = () => {
+      if (!admin || admin.dept_name === "" || admin.station_name === "") {
+        fetchAdmin(localStorage.getItem("id") as string);
+        return;
+      }
+      dispatch(
+        fetchIncidents({
+          deptName: admin.dept_name,
+          stationName: admin.station_name,
+        })
+      );
+      dispatch(
+        fetchStaff({
+          deptName: admin.dept_name,
+          stationName: admin.station_name,
+        })
+      );
+      dispatch(
+        fetchTasks({
+          deptName: admin.dept_name,
+          stationName: admin.station_name,
+        })
+      );
+      dispatch(
+        fetchNotifications({
+          deptName: admin.dept_name,
+          stationName: admin.station_name,
+        })
+      );
+    };
+
+    fetchData();
+
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
   }, [admin, dispatch]);
 
   useEffect(() => {
@@ -106,7 +125,7 @@ export default function Admin(props: { [x: string]: any }) {
       <div className="h-full w-full bg-lightPrimary dark:!bg-navy-900">
         {/* Main Content */}
         <main
-          className={`mx-[12px] h-full flex-none transition-all md:pr-2 xl:ml-[313px]`}
+          className={`mx-[12px] h-full flex-none transition-all md:pr-2 xl:ml-[300px]`}
         >
           {/* Routes */}
           <div className="h-full">

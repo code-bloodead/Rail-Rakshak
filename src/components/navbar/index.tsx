@@ -1,14 +1,22 @@
 import { useState } from "react";
 import Dropdown from "@/components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
-import { Link } from "react-router-dom";
-import { BsArrowBarUp } from "react-icons/bs";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import avatar from "@/assets/img/defaultAvatar.jpg";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { clearAdmin } from "@/app/features/AdminSlice";
+import { MdReport } from "react-icons/md";
+import { FaTasks } from "react-icons/fa";
+import { TbReport } from "react-icons/tb";
+import { truncateString } from "@/constants/utils";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import {
+  readAllNotifications,
+  readNotification,
+} from "@/app/features/NotificationSlice";
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -19,9 +27,41 @@ const Navbar = (props: {
   const dispatch = useAppDispatch();
   const { onOpenSidenav, brandText, currentRoute } = props;
   const [darkmode, setDarkmode] = useState(false);
+  const navigate: NavigateFunction = useNavigate();
   const admin = useAppSelector((state) => state.admin.data);
+  const notifications = useAppSelector((state) => state.notifications.data);
   const isSearchVisible =
     currentRoute === "Dashboard" || currentRoute === "CCTV Footage";
+
+  const handleClick = (type: string) => {
+    if (type === "task") {
+      return "/dept-admin/tasks";
+    } else if (type === "incident") {
+      return "/dept-admin/detected-incidents";
+    } else if (type === "report") {
+      return "/dept-admin/reported-incidents";
+    }
+  };
+
+  const handleRead = (id: string) => {
+    console.log("Read clicked");
+    dispatch(
+      readNotification({
+        dept_name: admin?.dept_name,
+        id: id,
+        station_name: admin?.station_name,
+      })
+    );
+  };
+
+  const handleReadAll = () => {
+    dispatch(
+      readAllNotifications({
+        dept_name: admin?.dept_name,
+        station_name: admin?.station_name,
+      })
+    );
+  };
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -83,49 +123,72 @@ const Navbar = (props: {
         {/* start Notification */}
         <Dropdown
           button={
-            <p className="cursor-pointer">
-              <IoMdNotificationsOutline className="h-4 w-4 text-gray-600 dark:text-white" />
-            </p>
+            <div className="relative">
+              <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
+              <div
+                className={`absolute top-0 right-0  w-4 h-4  linear flex items-center justify-center rounded-full bg-brand-500 p-2 text-xs font-bold text-white transition duration-200
+           hover:cursor-pointer dark:active:bg-white/10 ${
+             notifications?.length === 0 && "hidden"
+           }`}
+              >
+                {notifications?.length}
+              </div>
+            </div>
           }
           animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
           children={
             <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
               <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-navy-700 dark:text-white">
-                  Notification
+                  Notifications
                 </p>
-                <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  Mark all read
-                </p>
+                {notifications?.length > 1 && (
+                  <p
+                    className="text-sm font-bold text-navy-700 dark:text-white"
+                    onClick={handleReadAll}
+                  >
+                    Mark all read
+                  </p>
+                )}
               </div>
+              <hr />
 
-              <button className="flex w-full items-center">
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <BsArrowBarUp />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                  <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                    New Update: Rail Rakshak is Here
-                  </p>
-                  <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-                    A new update for your downloaded item is available!
-                  </p>
-                </div>
-              </button>
-
-              <button className="flex w-full items-center">
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <BsArrowBarUp />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                  <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                    New Update: Rail Rakshak is Here
-                  </p>
-                  <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-                    A new update for your downloaded item is available!
-                  </p>
-                </div>
-              </button>
+              {notifications?.length > 0
+                ? notifications.map((notification) => (
+                    <Link
+                      key={notification?.id}
+                      to={handleClick(notification?.type)}
+                      className="flex w-full items-center"
+                    >
+                      <div className="flex h-full p-2 bg-blueSecondary items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500  text-2xl text-white">
+                        {notification?.type === "incident" ? (
+                          <MdReport className="h-6 w-6" />
+                        ) : notification?.type === "report" ? (
+                          <TbReport className="h-6 w-6" />
+                        ) : (
+                          <FaTasks className="h-6 w-6" />
+                        )}
+                      </div>
+                      <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
+                        <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
+                          {truncateString(notification?.title, 50)}
+                        </p>
+                        <p className="font-base text-left text-xs text-gray-900 dark:text-white">
+                          {truncateString(notification?.description, 75)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          handleRead(notification?.id);
+                        }}
+                        className={`linear mx-1 flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-xl font-bold text-brand-500 transition duration-200
+           hover:cursor-pointer hover:bg-gray-100 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10`}
+                      >
+                        <IoMdCheckmarkCircleOutline className="h-5 w-5" />
+                      </button>
+                    </Link>
+                  ))
+                : "No new notifications"}
             </div>
           }
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}

@@ -78,6 +78,24 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
+export const editTask = createAsyncThunk(
+  "task/edit",
+  async (payload: Task, thunkAPI) => {
+    console.log(payload);
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/tasks/update_task`,
+        payload
+      );
+      console.log(res.data);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 export const TaskSlice = createSlice({
   name: "tasks",
   initialState,
@@ -128,6 +146,21 @@ export const TaskSlice = createSlice({
       state.error = null;
     });
     builder.addCase(deleteTask.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || null;
+    });
+    builder.addCase(editTask.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(editTask.fulfilled, (state, action) => {
+      state.data = state.data.map((task) =>
+        task.id === action.payload.SUCCESS.id ? action.payload.SUCCESS : task
+      );
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(editTask.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || null;
     });

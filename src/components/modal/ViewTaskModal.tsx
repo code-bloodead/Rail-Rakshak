@@ -26,7 +26,7 @@ import { useAppDispatch, useAppSelector } from "@/app/store";
 import { Incident } from "@/app/features/IncidentSlice";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { Staff } from "@/app/features/StaffSlice";
-import { addTask, deleteTask } from "@/app/features/TaskSlice";
+import { deleteTask, editTask } from "@/app/features/TaskSlice";
 import { FiSave } from "react-icons/fi";
 import { Admin } from "@/app/features/AdminSlice";
 import { Select, Option } from "@material-tailwind/react";
@@ -138,18 +138,20 @@ const ViewTaskModal = ({
   }, [task, staff]);
 
   const handleSave = async () => {
-    // const formData = {
-    //   title: taskData.title,
-    //   description: taskData.description,
-    //   assigned_to: taskData.assigned_to,
-    //   image: taskData.image,
-    //   deadline: taskData.deadline,
-    //   assc_incident: taskData.assc_incident,
-    //   dept_name: taskData.dept_name,
-    //   station_name: taskData.station_name,
-    // };
-    // dispatch(addTask(formData));
-    console.log(taskData);
+    const formData = {
+      id: task.id,
+      title: taskData.title,
+      description: taskData.description,
+      assigned_to: taskData.assigned_to,
+      image: taskData.image,
+      deadline: taskData.deadline,
+      status: taskData.status,
+      assc_incident: taskData.assc_incident,
+      dept_name: taskData.dept_name,
+      station_name: taskData.station_name,
+    };
+    console.log(formData);
+    await dispatch(editTask(formData));
     onViewTaskModalClose();
   };
 
@@ -173,7 +175,7 @@ const ViewTaskModal = ({
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] top-[3vh] sm:top-[5vh]">
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] ">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900" />
           <ModalBody>
             <Card
@@ -181,7 +183,7 @@ const ViewTaskModal = ({
                 hasImage
                   ? "w-[85vw] md-max:h-[95vh]"
                   : "w-[85vw] md:w-[75vw] lg:w-[65vw] md-max:h-[90vh]"
-              }  max-w-[950px] flex flex-col !z-[1004]  overflow-y-auto`}
+              }  max-w-[950px] flex flex-col !z-[1004]  overflow-y-auto overflow-x-hidden`}
             >
               <h1
                 className={`mb-4 text-2xl text-navy-700 dark:text-white font-bold ${

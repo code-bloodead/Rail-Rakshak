@@ -1,12 +1,12 @@
 export const barChartDataWeeklyIncidents = [
   {
     name: "Reported Incidents",
-    data: [400, 200, 330, 190, 320, 450, 360],
+    data: [7, 5, 9, 8, 4, 3, 6],
     color: "#6AD2Fa",
   },
   {
     name: "Detected Incidents",
-    data: [320, 300, 230, 390, 120, 250, 60],
+    data: [4, 6, 11, 2, 3, 8, 5],
     color: "#4318FF",
   },
 ];
