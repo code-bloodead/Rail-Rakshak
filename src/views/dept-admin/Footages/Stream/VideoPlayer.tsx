@@ -32,11 +32,15 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
       autoplay: true,
       controls: true,
       responsive: true,
+      loop: true,
+      muted: true,
       fluid: true,
-      controlBar: {
-        'pictureInPictureToggle': false,
-        'volumePanel': false,
-    },
+      controlBar: false,
+      // controlBar: {
+      //   hide: true,
+      //   pictureInPictureToggle: false,
+      //   volumePanel: false,
+      // },
       sources: [
         {
           src: url,
@@ -60,7 +64,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
           handlePlayerReady(player);
         }
       ));
-      
+      // player.muted(true);
     } else {
       // You could update an existing player in the `else` block here
       // on prop change, for example:
@@ -71,7 +75,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
 
     return () => {
       // playerRef.current?.dispose()
-    }
+    };
   }, [url, videoRef]);
 
   // Dispose the Video.js player when the functional component unmounts
@@ -88,7 +92,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
 
   return (
     <div data-vjs-player>
-      <div ref={videoRef}/>
+      <div ref={videoRef} />
       {/* <video ref={videoRef} controls /> */}
     </div>
   );
