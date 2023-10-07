@@ -89,7 +89,7 @@ const NewTaskModal = ({
           className="bg-[#000000A0] !z-[1001]]"
           backdropFilter="blur(10px)"
         />
-        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%] ">
+        <ModalContent className="!z-[1002] !m-auto !w-max min-w-[350px] !max-w-[85%]  top-[3vh] md:top-[5vh]">
           <ModalCloseButton className="right-5 top-5 absolute z-[5000] text-[#000000A0] hover:text-navy-900 " />
           <ModalBody>
             <Card
